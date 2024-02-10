@@ -12,7 +12,7 @@
   </div>
 
   <div class="sidebar">
-    <SideBar open={open}></SideBar>
+    <SideBar {open}></SideBar>
   </div>
 
   <div class="speedbar">
@@ -29,6 +29,7 @@
     top: 0;
     left: 0;
     right: 0;
+    display: flex;
   }
 
   .sidebar {
