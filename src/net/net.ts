@@ -1,8 +1,10 @@
 import { Address4 } from "ip-address";
+import { broadcastmac } from "./consts";
 import {
   FirewallError,
   NetworkError,
   NoNodeError,
+  NoRouteError,
   NoSwitchportError,
 } from "./errors";
 import { makeString } from "./random";
@@ -12,14 +14,35 @@ export default class Node {
   public inPacketLog: Array<Packet> = new Array<Packet>();
   public outPacketLog: Array<Packet> = new Array<Packet>();
 
+  public currPacketQueue: Array<Packet> = new Array<Packet>();
+  public nextPacketQueue: Array<Packet> = new Array<Packet>();
+
+  // Mapping of IP addresses to the MAC address, and the node edge to forward along.
+  private arpTable: Map<Address4, [string, string]> = new Map<
+    Address4,
+    [string, string]
+  >();
+
+  // Mapping of all interfaces indices with the appropriate IP/MAC.
+  public interfaces: Map<number, [Address4 | null, string | null]>;
+
   // assign a random node id to each node we create.
   public id: string = "node-" + makeString(8);
 
   private fwRules: Array<FirewallRule> = new Array<FirewallRule>();
 
-  constructor(id?: string) {
+  public nodeX: number | undefined;
+  public nodeY: number | undefined;
+
+  constructor(numPorts: number, id?: string) {
     if (id) {
       this.id = id;
+    }
+
+    // create all of our interfaces.
+    this.interfaces = new Map<number, [Address4 | null, string | null]>();
+    for (let i = 0; i < numPorts; numPorts++) {
+      this.interfaces.set(i, [null, null]);
     }
   }
 
@@ -47,6 +70,16 @@ export default class Node {
 
   public addRule(rule: FirewallRule) {
     this.fwRules.push(rule);
+  }
+
+  // Returns the found MAC address/node to forward along, otherwise cache miss.
+  public findAddrCached(ip: Address4): [string, string] | null {
+    let found = this.arpTable.get(ip);
+    if (found) {
+      return [found[0], found[1]];
+    } else {
+      return null;
+    }
   }
 }
 
@@ -149,13 +182,13 @@ export class FirewallRule {
 }
 
 export class Switch extends Node implements PacketHandler {
-  private ports: number;
   // internal lookup table of MAC adresses to external nodes.
   private macToIface: Map<string, string> = new Map<string, string>();
+  private numPorts: number;
 
-  constructor(ports: number) {
-    super();
-    this.ports = ports;
+  constructor(ports: number, id?: string) {
+    super(0, id);
+    this.numPorts = ports;
   }
 
   // Returns the node to forward to and the output packet, or null
@@ -165,10 +198,14 @@ export class Switch extends Node implements PacketHandler {
       return new HandleResult("", p, err);
     }
 
-    if (this.macToIface.has(p.dstmac)) {
-      super.handleOut(p);
+    if (p.dstmac === broadcastmac) {
+      // for (let neigh of this.macToIface) {
+      // }
+      return new HandleResult("", p, null);
+    } else if (this.macToIface.has(p.dstmac)) {
       let n = this.macToIface.get(p.dstmac);
       if (n) {
+        super.handleOut(p);
         return new HandleResult(n, p);
       } else {
         return new HandleResult("", p, NoNodeError);
@@ -178,9 +215,7 @@ export class Switch extends Node implements PacketHandler {
     }
   }
 
-  public add_neighbor(mac: string, node: string) {
-    if (this.macToIface.size + 1 < this.ports) this.macToIface.set(mac, node);
-  }
+  public add_neighbor(port: number, mac: string, node: string) {}
 
   public get_num_active_ports() {
     return this.macToIface.size;
@@ -188,8 +223,10 @@ export class Switch extends Node implements PacketHandler {
 }
 
 export class Router extends Node implements PacketHandler {
-  constructor() {
-    super();
+  private subnetToIface: Map<Address4, string> = new Map<Address4, string>();
+
+  constructor(ports: number, id?: string) {
+    super(ports, id);
   }
 
   public handle(p: Packet): HandleResult | null {
@@ -198,14 +235,35 @@ export class Router extends Node implements PacketHandler {
       return new HandleResult("", p, err);
     }
 
-    super.handleOut(p);
-    return null;
+    for (let route of this.subnetToIface) {
+      if (p.dstip.isInSubnet(route[0])) {
+        let n = this.subnetToIface.get(p.dstip);
+        if (n) {
+          let found = super.findAddrCached(p.dstip);
+          if (found) {
+            let newP = p;
+
+            super.handleOut(newP);
+            return new HandleResult(found[1], newP);
+          }
+        } else {
+          return new HandleResult("", p, NoNodeError);
+        }
+      }
+    }
+
+    return new HandleResult("", p, NoRouteError);
   }
+
+  public add_route(subnet: Address4, node: string) {}
 }
 
 export class Machine extends Node implements PacketHandler {
-  constructor() {
-    super();
+  private ip: Address4;
+
+  constructor(ports: number, ip: Address4, id?: string) {
+    super(ports, id);
+    this.ip = ip;
   }
 
   public handle(p: Packet): HandleResult | null {
@@ -219,9 +277,14 @@ export class Machine extends Node implements PacketHandler {
   }
 }
 
+export enum MachineApplication {
+  Ping,
+  SSH,
+}
+
 export class InternetGateway extends Node implements PacketHandler {
-  constructor() {
-    super();
+  constructor(id?: string) {
+    super(1, id);
   }
 
   public handle(p: Packet): HandleResult | null {

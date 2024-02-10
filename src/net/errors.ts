@@ -20,3 +20,6 @@ export const FirewallError: NetworkError = new NetworkError(
 export const NoNodeError: NetworkError = new NetworkError(
   "node not found in network"
 );
+export const NoAddressError: NetworkError = new NetworkError(
+  "no host has desired ip"
+);
