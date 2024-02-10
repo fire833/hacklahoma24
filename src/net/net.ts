@@ -1,16 +1,9 @@
 import { Address4 } from "ip-address";
-import { broadcastmac } from "./consts";
-import {
-  FirewallError,
-  NetworkError,
-  NoNodeError,
-  NoRouteError,
-  NoSwitchportError,
-} from "./errors";
+import { FirewallError, NetworkError } from "./errors";
 import { makeString } from "./random";
 
 // Generic node type that is used for all subtypes.
-export default abstract class Node {
+export abstract class Node {
   public inPacketLog: Array<Packet> = new Array<Packet>();
   public outPacketLog: Array<Packet> = new Array<Packet>();
 
@@ -87,15 +80,32 @@ export default abstract class Node {
     this.nextPacketQueue.push(p);
   }
 
-  public abstract handle(packet: Packet): Array<NetworkError> | null;
+  public abstract handle(
+    packet: Packet,
+    net: Network
+  ): Array<NetworkError> | null;
 
-  public tick() {
+  public tick(net: Network) {
     for (let packet of this.currPacketQueue) {
-      this.handle(packet);
+      this.handle(packet, net);
     }
 
     this.currPacketQueue = this.nextPacketQueue;
     this.nextPacketQueue = new Array();
+  }
+
+  // Returns whether a provided address is outsie of the subnets of all interfaces,
+  // in which case needs to go to the default gateway.
+  public isAddressRemote(addr: Address4): boolean {
+    for (let iface of this.interfaces) {
+      if (iface[1][0]) {
+        if (addr.isInSubnet(iface[1][0])) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }
 
@@ -104,7 +114,7 @@ export class Network {
 
   public tick() {
     for (let node of this.net) {
-      node[1].tick();
+      node[1].tick(this);
     }
   }
 }
@@ -116,19 +126,22 @@ export class Packet {
   public dstip: Address4;
 
   public payload: string;
+  public app: MachineApplication;
 
   constructor(
     srcmac: string,
     dstmac: string,
     srcip: Address4,
     dstip: Address4,
-    payload: string
+    payload: string,
+    app: MachineApplication
   ) {
     this.srcmac = srcmac;
     this.dstmac = dstmac;
     this.srcip = srcip;
     this.dstip = dstip;
     this.payload = payload;
+    this.app = app;
   }
 }
 
@@ -150,121 +163,8 @@ export class FirewallRule {
   }
 }
 
-export class Switch extends Node {
-  // internal lookup table of MAC adresses to external nodes.
-  private macToIface: Map<string, string> = new Map<string, string>();
-  private numPorts: number;
-
-  constructor(ports: number, id?: string) {
-    super(0, id);
-    this.numPorts = ports;
-  }
-
-  // Returns the node to forward to and the output packet, or null
-  public handle(p: Packet): Array<NetworkError> | null {
-    let err = super.handleIn(p);
-    if (err) {
-      return new Array(err);
-    }
-
-    if (p.dstmac === broadcastmac) {
-      // for (let neigh of this.macToIface) {
-      // }
-      return null;
-    } else if (this.macToIface.has(p.dstmac)) {
-      let n = this.macToIface.get(p.dstmac);
-      if (n) {
-        super.handleOut(p);
-        return null;
-      } else {
-        return Array(NoNodeError);
-      }
-    } else {
-      return Array(NoSwitchportError);
-    }
-  }
-
-  public add_neighbor(port: number, mac: string, node: string) {}
-
-  public get_num_active_ports() {
-    return this.macToIface.size;
-  }
-}
-
-export class Router extends Node {
-  private subnetToIface: Map<Address4, string> = new Map<Address4, string>();
-
-  constructor(ports: number, id?: string) {
-    super(ports, id);
-  }
-
-  public handle(p: Packet): Array<NetworkError> | null {
-    let err = super.handleIn(p);
-    if (err) {
-      return Array(err);
-    }
-
-    for (let route of this.subnetToIface) {
-      if (p.dstip.isInSubnet(route[0])) {
-        let n = this.subnetToIface.get(p.dstip);
-        if (n) {
-          let found = super.findAddrCached(p.dstip);
-          if (found) {
-            let newP = p;
-
-            super.handleOut(newP);
-            return null;
-          }
-        } else {
-          return Array(NoNodeError);
-        }
-      }
-    }
-
-    return Array(NoRouteError);
-  }
-
-  public add_route(subnet: Address4, node: string) {}
-}
-
-export class Machine extends Node {
-  private ip: Address4;
-
-  constructor(ports: number, ip: Address4, id?: string) {
-    super(ports, id);
-    this.ip = ip;
-  }
-
-  public handle(p: Packet): Array<NetworkError> | null {
-    let err = super.handleIn(p);
-    if (err) {
-      return Array(err);
-    }
-
-    super.handleOut(p);
-    return null;
-  }
-}
-
 export enum MachineApplication {
   Ping,
   SSH,
-}
-
-export class InternetGateway extends Node {
-  constructor(id?: string) {
-    super(1, id);
-  }
-
-  public handle(p: Packet): Array<NetworkError> | null {
-    let err = super.handleIn(p);
-    if (err) {
-      return Array(err);
-    }
-
-    // fetch(p.payload).then((res) => {});
-
-    super.handleOut(p);
-    return null;
-  }
+  VideoStream,
 }
