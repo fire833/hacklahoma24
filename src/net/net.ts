@@ -13,7 +13,7 @@ export abstract class Node {
   public nextPacketQueue: Array<Packet> = new Array<Packet>();
 
   // Mapping of IP addresses to the MAC address, and the node edge to forward along.
-  private arpTable: Map<Address4, [string, string]> = new Map<
+  public arpTable: Map<Address4, [string, string]> = new Map<
     Address4,
     [string, string]
   >();
@@ -121,6 +121,36 @@ export abstract class Node {
 
     return false;
   }
+
+  public resolveArpRequest(p: Packet, net: Network) {
+    for (let iface of this.interfaces) {
+      // If someone is looking for us, then return our MAC address.
+      if (iface[1][0] && iface[1][1] && iface[1][0] === p.dstip) {
+        let n = net.net.get(p.srcnode);
+        if (n) {
+          let outP = new Packet(
+            this.id,
+            iface[1][1],
+            p.dstmac,
+            p.dstip,
+            p.srcip,
+            p.payload,
+            PacketType.ARPResponse
+          );
+
+          n.appendPacket(outP);
+          this.handleOut(outP);
+          return;
+        }
+      }
+    }
+  }
+
+  // If we get an ARP response, add to our ARP table.
+  public resolveArpResponse(p: Packet) {
+    if (p.app === PacketType.ARPResponse)
+      this.arpTable.set(p.srcip, [p.srcmac, p.srcnode]);
+  }
 }
 
 export class Network {
@@ -147,22 +177,27 @@ export class Network {
 }
 
 export class Packet {
+  // A node can have multiple mac addresses for multiple interfaces, but will only have 1 id.
+  // This value should be updated on every
+  public srcnode: string;
   public srcmac: string;
   public dstmac: string;
   public srcip: Address4;
   public dstip: Address4;
 
   public payload: string;
-  public app: MachineApplication;
+  public app: PacketType;
 
   constructor(
+    srcnode: string,
     srcmac: string,
     dstmac: string,
     srcip: Address4,
     dstip: Address4,
     payload: string,
-    app: MachineApplication
+    app: PacketType
   ) {
+    this.srcnode = srcnode;
     this.srcmac = srcmac;
     this.dstmac = dstmac;
     this.srcip = srcip;
@@ -190,8 +225,10 @@ export class FirewallRule {
   }
 }
 
-export enum MachineApplication {
+export enum PacketType {
   Ping,
   SSH,
   VideoStream,
+  ARPRequest,
+  ARPResponse,
 }

@@ -1,12 +1,7 @@
 import { Address4 } from "ip-address";
 import { broadcastmac } from "./consts";
-import {
-  NetworkError,
-  NoNodeError,
-  NoRouteError,
-  NoSwitchportError,
-} from "./errors";
-import { MachineApplication, Network, Node, Packet } from "./net";
+import { NetworkError, NoNodeError, NoSwitchportError } from "./errors";
+import { Network, Node, Packet, PacketType } from "./net";
 
 export class Switch extends Node {
   // internal lookup table of MAC adresses to external nodes.
@@ -30,6 +25,7 @@ export class Switch extends Node {
     if (p.dstmac === broadcastmac) {
       for (let neigh of this.macToIface) {
         let node = net.net.get(neigh[1]);
+        p.srcnode = super.id;
         if (node) {
           node.appendPacket(p);
         } else {
@@ -40,13 +36,16 @@ export class Switch extends Node {
     } else if (this.macToIface.has(p.dstmac)) {
       let n = this.macToIface.get(p.dstmac);
       if (n) {
+        p.srcnode = super.id;
         super.handleOut(p);
         return null;
       } else {
-        return Array(NoNodeError);
+        arr.push(NoNodeError);
+        return arr;
       }
     } else {
-      return Array(NoSwitchportError);
+      arr.push(NoSwitchportError);
+      return arr;
     }
   }
 
@@ -70,8 +69,6 @@ export class Switch extends Node {
 }
 
 export class Router extends Node {
-  private subnetToIface: Map<Address4, string> = new Map<Address4, string>();
-
   constructor(ports: number, id?: string, x?: number, y?: number) {
     super(ports, id, x, y);
   }
@@ -84,24 +81,37 @@ export class Router extends Node {
       return arr;
     }
 
-    for (let route of this.subnetToIface) {
-      if (p.dstip.isInSubnet(route[0])) {
-        let n = this.subnetToIface.get(p.dstip);
-        if (n) {
-          let found = super.findAddrCached(p.dstip);
-          if (found) {
-            let newP = p;
+    switch (p.app) {
+      case PacketType.ARPRequest: {
+        super.resolveArpRequest(p, net);
+        break;
+      }
+      case PacketType.ARPResponse: {
+        super.resolveArpResponse(p);
+        break;
+      }
+      default: {
+        for (let route of super.interfaces) {
+          // if we find an interface with the same subnet, we need to forward to that network.
+          if (route[1][0] && p.dstip.isInSubnet(route[1][0])) {
+            let n = super.arpTable.get(p.dstip); // If we don't have a
+            if (n) {
+              let found = super.findAddrCached(p.dstip);
+              if (found) {
+                let newP = p;
 
-            super.handleOut(newP);
-            return null;
+                super.handleOut(newP);
+                return null;
+              }
+            } else {
+              super.interfaces;
+            }
           }
-        } else {
-          return Array(NoNodeError);
         }
       }
     }
 
-    return Array(NoRouteError);
+    return arr;
   }
 
   public add_route(subnet: Address4, node: string) {}
@@ -130,11 +140,24 @@ export class Machine extends Node {
     }
 
     switch (p.app) {
-      case MachineApplication.Ping: {
+      case PacketType.ARPRequest: {
+        super.resolveArpRequest(p, net);
+        break;
+      }
+      case PacketType.ARPResponse: {
+        super.resolveArpResponse(p);
+        break;
+      }
+      case PacketType.Ping: {
+        if (net.net.get(p.srcnode)) {
+        }
+      }
+      case PacketType.SSH: {
+      }
+      case PacketType.VideoStream: {
       }
     }
 
-    super.handleOut(p);
     return null;
   }
 }
