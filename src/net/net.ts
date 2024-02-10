@@ -30,10 +30,12 @@ export abstract class Node {
   public nodeX: number | undefined;
   public nodeY: number | undefined;
 
-  constructor(numPorts: number, id?: string) {
+  constructor(numPorts: number, id?: string, x?: number, y?: number) {
     if (id) {
       this.id = id;
     }
+    this.nodeX = x;
+    this.nodeY = y;
 
     // create all of our interfaces. [IP, MAC].
     this.interfaces = new Map<number, [Address4 | null, string | null]>();

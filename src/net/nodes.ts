@@ -13,8 +13,8 @@ export class Switch extends Node {
   private macToIface: Map<string, string> = new Map<string, string>();
   private numPorts: number;
 
-  constructor(ports: number, id?: string) {
-    super(0, id);
+  constructor(ports: number, id?: string, x?: number, y?: number) {
+    super(0, id, x, y);
     this.numPorts = ports;
   }
 
@@ -72,8 +72,8 @@ export class Switch extends Node {
 export class Router extends Node {
   private subnetToIface: Map<Address4, string> = new Map<Address4, string>();
 
-  constructor(ports: number, id?: string) {
-    super(ports, id);
+  constructor(ports: number, id?: string, x?: number, y?: number) {
+    super(ports, id, x, y);
   }
 
   public handle(p: Packet, net: Network): Array<NetworkError> | null {
@@ -110,8 +110,14 @@ export class Router extends Node {
 export class Machine extends Node {
   private ip: Address4;
 
-  constructor(ports: number, ip: Address4, id?: string) {
-    super(ports, id);
+  constructor(
+    ports: number,
+    ip: Address4,
+    id?: string,
+    x?: number,
+    y?: number
+  ) {
+    super(ports, id, x, y);
     this.ip = ip;
   }
 
@@ -134,8 +140,8 @@ export class Machine extends Node {
 }
 
 export class InternetGateway extends Node {
-  constructor(id?: string) {
-    super(1, id);
+  constructor(id?: string, x?: number, y?: number) {
+    super(1, id, x, y);
   }
 
   public handle(p: Packet, net: Network): Array<NetworkError> | null {
