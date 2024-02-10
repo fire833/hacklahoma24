@@ -1,4 +1,6 @@
-<div id="bg">Speedbar</div>
+<div id="bg">
+  <input type="range" min = "1" max = "100" value = "50" class="slider" id="sendSpeed">
+</div>
 
 <style>
   #bg {
