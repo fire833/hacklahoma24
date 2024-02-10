@@ -2,15 +2,17 @@
   import SideBar from "./UI/SideBar.svelte";
   import TopBar from "./UI/TopBar.svelte";
   import SpeedBar from "./UI/SpeedBar.svelte";
+
+  let open = false;
 </script>
 
 <div id="ui">
   <div class="topbar">
-    <TopBar></TopBar>
+    <TopBar bind:open></TopBar>
   </div>
 
   <div class="sidebar">
-    <SideBar></SideBar>
+    <SideBar open={open}></SideBar>
   </div>
 
   <div class="speedbar">

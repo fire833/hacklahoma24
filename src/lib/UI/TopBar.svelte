@@ -1,6 +1,8 @@
 <script lang="ts">
   let modes = ["PHYS", "LINK", "IP", "APP"];
   export let visMode = "PHYS";
+
+  export let open = false;
 </script>
 
 <div id="bg">
@@ -13,6 +15,10 @@
       }}>{mode}</button
     >
   {/each}
+
+  <button on:click={() => open=!open}>
+    Sidebar Toggle
+  </button>
 </div>
 
 <style>
