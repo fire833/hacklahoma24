@@ -10,7 +10,7 @@ import {
 import { makeString } from "./random";
 
 // Generic node type that is used for all subtypes.
-export default class Node {
+export default abstract class Node {
   public inPacketLog: Array<Packet> = new Array<Packet>();
   public outPacketLog: Array<Packet> = new Array<Packet>();
 
@@ -39,7 +39,7 @@ export default class Node {
       this.id = id;
     }
 
-    // create all of our interfaces.
+    // create all of our interfaces. [IP, MAC].
     this.interfaces = new Map<number, [Address4 | null, string | null]>();
     for (let i = 0; i < numPorts; numPorts++) {
       this.interfaces.set(i, [null, null]);
@@ -81,62 +81,31 @@ export default class Node {
       return null;
     }
   }
-}
 
-export interface PacketHandler {
-  // Either returns the packet to forward to a new node, or if null then
-  // no further forwarding will occur, or an error means abort because something
-  // went wrong.
-  handle(p: Packet): HandleResult | null;
-}
+  // For callers who need to forward packets to this node, add to the next tick queue.
+  public appendPacket(p: Packet) {
+    this.nextPacketQueue.push(p);
+  }
 
-export class HandleResult {
-  node: string;
-  packet: Packet;
-  err?: NetworkError;
+  public abstract handle(packet: Packet): Array<NetworkError> | null;
 
-  constructor(node: string, packet: Packet, err?: NetworkError) {
-    this.node = node;
-    this.packet = packet;
-    this.err = err;
+  public tick() {
+    for (let packet of this.currPacketQueue) {
+      this.handle(packet);
+    }
+
+    this.currPacketQueue = this.nextPacketQueue;
+    this.nextPacketQueue = new Array();
   }
 }
 
 export class Network {
-  public net: Map<string, PacketHandler> = new Map<string, PacketHandler>();
+  public net: Map<string, Node> = new Map<string, Node>();
 
-  // Start at a certain node, and route the packet across the network.
-  public send_packet(source: string, p: Packet): NetworkError | null {
-    let activeNode: PacketHandler | null = null;
-
-    let n = this.net.get(source);
-    if (n) {
-      activeNode = n;
-    } else {
-      return NoNodeError;
+  public tick() {
+    for (let node of this.net) {
+      node[1].tick();
     }
-
-    while (activeNode) {
-      let res = activeNode.handle(p);
-      if (res) {
-        if (res.err) {
-          return res.err;
-        }
-
-        const newNode = this.net.get(res.node);
-        if (newNode) {
-          activeNode = newNode;
-        } else {
-          return NoNodeError;
-        }
-
-        continue;
-      } else {
-        return null;
-      }
-    }
-
-    return null;
   }
 }
 
@@ -181,7 +150,7 @@ export class FirewallRule {
   }
 }
 
-export class Switch extends Node implements PacketHandler {
+export class Switch extends Node {
   // internal lookup table of MAC adresses to external nodes.
   private macToIface: Map<string, string> = new Map<string, string>();
   private numPorts: number;
@@ -192,26 +161,26 @@ export class Switch extends Node implements PacketHandler {
   }
 
   // Returns the node to forward to and the output packet, or null
-  public handle(p: Packet): HandleResult | null {
+  public handle(p: Packet): Array<NetworkError> | null {
     let err = super.handleIn(p);
     if (err) {
-      return new HandleResult("", p, err);
+      return new Array(err);
     }
 
     if (p.dstmac === broadcastmac) {
       // for (let neigh of this.macToIface) {
       // }
-      return new HandleResult("", p, null);
+      return null;
     } else if (this.macToIface.has(p.dstmac)) {
       let n = this.macToIface.get(p.dstmac);
       if (n) {
         super.handleOut(p);
-        return new HandleResult(n, p);
+        return null;
       } else {
-        return new HandleResult("", p, NoNodeError);
+        return Array(NoNodeError);
       }
     } else {
-      return new HandleResult("", p, NoSwitchportError);
+      return Array(NoSwitchportError);
     }
   }
 
@@ -222,17 +191,17 @@ export class Switch extends Node implements PacketHandler {
   }
 }
 
-export class Router extends Node implements PacketHandler {
+export class Router extends Node {
   private subnetToIface: Map<Address4, string> = new Map<Address4, string>();
 
   constructor(ports: number, id?: string) {
     super(ports, id);
   }
 
-  public handle(p: Packet): HandleResult | null {
+  public handle(p: Packet): Array<NetworkError> | null {
     let err = super.handleIn(p);
     if (err) {
-      return new HandleResult("", p, err);
+      return Array(err);
     }
 
     for (let route of this.subnetToIface) {
@@ -244,21 +213,21 @@ export class Router extends Node implements PacketHandler {
             let newP = p;
 
             super.handleOut(newP);
-            return new HandleResult(found[1], newP);
+            return null;
           }
         } else {
-          return new HandleResult("", p, NoNodeError);
+          return Array(NoNodeError);
         }
       }
     }
 
-    return new HandleResult("", p, NoRouteError);
+    return Array(NoRouteError);
   }
 
   public add_route(subnet: Address4, node: string) {}
 }
 
-export class Machine extends Node implements PacketHandler {
+export class Machine extends Node {
   private ip: Address4;
 
   constructor(ports: number, ip: Address4, id?: string) {
@@ -266,10 +235,10 @@ export class Machine extends Node implements PacketHandler {
     this.ip = ip;
   }
 
-  public handle(p: Packet): HandleResult | null {
+  public handle(p: Packet): Array<NetworkError> | null {
     let err = super.handleIn(p);
     if (err) {
-      return new HandleResult("", p, err);
+      return Array(err);
     }
 
     super.handleOut(p);
@@ -282,15 +251,15 @@ export enum MachineApplication {
   SSH,
 }
 
-export class InternetGateway extends Node implements PacketHandler {
+export class InternetGateway extends Node {
   constructor(id?: string) {
     super(1, id);
   }
 
-  public handle(p: Packet): HandleResult | null {
+  public handle(p: Packet): Array<NetworkError> | null {
     let err = super.handleIn(p);
     if (err) {
-      return new HandleResult("", p, err);
+      return Array(err);
     }
 
     // fetch(p.payload).then((res) => {});
