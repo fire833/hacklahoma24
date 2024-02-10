@@ -1,42 +1,43 @@
-<div class="navbar">
-  <a href="/">Home</a>
-  <a href="/">PHYS</a>
-</div>
+<script>
+  import SideBar from "./UI/SideBar.svelte";
+  import TopBar from "./UI/TopBar.svelte";
+  import SpeedBar from "./UI/SpeedBar.svelte";
+</script>
 
-<div class="container">
-  <slot />
+<div id="ui">
+  <div class="topbar">
+    <TopBar></TopBar>
+  </div>
+
+  <div class="sidebar">
+    <SideBar></SideBar>
+  </div>
+
+  <div class="speedbar">
+    <SpeedBar></SpeedBar>
+  </div>
 </div>
 
 <style>
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    background-color: white;
-    padding: 10px;
+  #ui {
+    display: block;
+  }
+  .topbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
   }
 
-  .navbar a {
-    color: gray;
-    text-decoration: none;
-    padding: 4px;
+  .sidebar {
+    position: absolute;
+    top: 4em;
+    left: 0;
   }
 
-  .navbar a:hover {
-    color: black;
-  }
-
-  .navbar a:active {
-    border: 1px solid white;
-    border-radius: 4px;
-  }
-
-  :global(body) {
-    margin: 0;
-  }
-
-  .container {
-    max-width: 90%;
-    margin: 0 auto;
-    width: 1288px;
+  .speedbar {
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 </style>
