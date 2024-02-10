@@ -4,9 +4,11 @@ import { makeString } from "./random";
 
 // Generic node type that is used for all subtypes.
 export abstract class Node {
+  // logs of packets
   public inPacketLog: Array<Packet> = new Array<Packet>();
   public outPacketLog: Array<Packet> = new Array<Packet>();
 
+  // queues of packets for ticks
   public currPacketQueue: Array<Packet> = new Array<Packet>();
   public nextPacketQueue: Array<Packet> = new Array<Packet>();
 
@@ -22,6 +24,7 @@ export abstract class Node {
   // assign a random node id to each node we create.
   public id: string = "node-" + makeString(8);
 
+  // firewall rules for stuff
   private fwRules: Array<FirewallRule> = new Array<FirewallRule>();
 
   public nodeX: number | undefined;
@@ -34,7 +37,7 @@ export abstract class Node {
 
     // create all of our interfaces. [IP, MAC].
     this.interfaces = new Map<number, [Address4 | null, string | null]>();
-    for (let i = 0; i < numPorts; numPorts++) {
+    for (let i = 0; i < numPorts; i++) {
       this.interfaces.set(i, [null, null]);
     }
   }
@@ -85,6 +88,15 @@ export abstract class Node {
     net: Network
   ): Array<NetworkError> | null;
 
+  public get_edges(): Array<[string, string]> {
+    let arr = Array();
+    for (let iface of this.arpTable) {
+      arr.push([this.id, iface[1][1]]);
+    }
+
+    return arr;
+  }
+
   public tick(net: Network) {
     for (let packet of this.currPacketQueue) {
       this.handle(packet, net);
@@ -116,6 +128,19 @@ export class Network {
     for (let node of this.net) {
       node[1].tick(this);
     }
+  }
+
+  public get_graph(): [Map<string, Node>, Array<[string, string]>] {
+    let arr = Array();
+    for (let node of this.net) {
+      arr.push(node[1].get_edges());
+    }
+
+    return [this.net, arr];
+  }
+
+  public add_node(n: Node) {
+    this.net.set(n.id, n);
   }
 }
 

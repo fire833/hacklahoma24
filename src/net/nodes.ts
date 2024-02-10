@@ -58,6 +58,15 @@ export class Switch extends Node {
   public get_num_active_ports() {
     return this.macToIface.size;
   }
+
+  public override get_edges(): Array<[string, string]> {
+    let arr = Array();
+    for (let m of this.macToIface) {
+      arr.push([super.id, m[1]]);
+    }
+
+    return arr;
+  }
 }
 
 export class Router extends Node {
