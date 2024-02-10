@@ -17,3 +17,6 @@ export const NoSwitchportError: NetworkError = new NetworkError(
 export const FirewallError: NetworkError = new NetworkError(
   "firewall rules blocked packet"
 );
+export const NoNodeError: NetworkError = new NetworkError(
+  "node not found in network"
+);
