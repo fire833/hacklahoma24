@@ -17,12 +17,9 @@ export default class Node {
 
   private fwRules: Array<FirewallRule> = new Array<FirewallRule>();
 
-  constructor(fwRules?: Array<FirewallRule>, id?: string) {
+  constructor(id?: string) {
     if (id) {
       this.id = id;
-    }
-    if (this.fwRules !== null && this.fwRules !== undefined) {
-      this.fwRules = fwRules;
     }
   }
 
@@ -40,6 +37,10 @@ export default class Node {
     return null;
   }
 
+  public addFirewallRule(ip: Address4) {
+    this.fwRules.push(new FirewallRule(new Array<Address4>(ip)));
+  }
+
   public handleOut(p: Packet) {
     this.outPacketLog.push(p);
   }
@@ -53,23 +54,56 @@ export interface PacketHandler {
   // Either returns the packet to forward to a new node, or if null then
   // no further forwarding will occur, or an error means abort because something
   // went wrong.
-  handle(p: Packet): [string, Packet] | NetworkError | null;
+  handle(p: Packet): HandleResult | null;
+}
+
+export class HandleResult {
+  node: string;
+  packet: Packet;
+  err?: NetworkError;
+
+  constructor(node: string, packet: Packet, err?: NetworkError) {
+    this.node = node;
+    this.packet = packet;
+    this.err = err;
+  }
 }
 
 export class Network {
-  public net: Map<string, Node> = new Map<string, Node>();
+  public net: Map<string, PacketHandler> = new Map<string, PacketHandler>();
 
   // Start at a certain node, and route the packet across the network.
   public send_packet(source: string, p: Packet): NetworkError | null {
-    let activeNode: Node = null;
+    let activeNode: PacketHandler | null = null;
 
     let n = this.net.get(source);
     if (n) {
       activeNode = n;
-    }
-    {
+    } else {
       return NoNodeError;
     }
+
+    while (activeNode) {
+      let res = activeNode.handle(p);
+      if (res) {
+        if (res.err) {
+          return res.err;
+        }
+
+        const newNode = this.net.get(res.node);
+        if (newNode) {
+          activeNode = newNode;
+        } else {
+          return NoNodeError;
+        }
+
+        continue;
+      } else {
+        return null;
+      }
+    }
+
+    return null;
   }
 }
 
@@ -99,6 +133,10 @@ export class Packet {
 export class FirewallRule {
   public dstIps: Array<Address4> = new Array<Address4>();
 
+  constructor(ips: Array<Address4>) {
+    this.dstIps = ips;
+  }
+
   public evaluatePacket(p: Packet): NetworkError | null {
     for (let ip of this.dstIps) {
       if (p.dstip.isInSubnet(ip)) {
@@ -121,22 +159,22 @@ export class Switch extends Node implements PacketHandler {
   }
 
   // Returns the node to forward to and the output packet, or null
-  public handle(p: Packet): [string, Packet] | NetworkError | null {
+  public handle(p: Packet): HandleResult | null {
     let err = super.handleIn(p);
     if (err) {
-      return err;
+      return new HandleResult("", p, err);
     }
 
     if (this.macToIface.has(p.dstmac)) {
       super.handleOut(p);
       let n = this.macToIface.get(p.dstmac);
       if (n) {
-        return [n, p];
+        return new HandleResult(n, p);
       } else {
-        return NoNodeError;
+        return new HandleResult("", p, NoNodeError);
       }
     } else {
-      return NoSwitchportError;
+      return new HandleResult("", p, NoSwitchportError);
     }
   }
 
@@ -154,10 +192,10 @@ export class Router extends Node implements PacketHandler {
     super();
   }
 
-  public handle(p: Packet): [string, Packet] | NetworkError | null {
+  public handle(p: Packet): HandleResult | null {
     let err = super.handleIn(p);
     if (err) {
-      return err;
+      return new HandleResult("", p, err);
     }
 
     super.handleOut(p);
@@ -170,10 +208,10 @@ export class Machine extends Node implements PacketHandler {
     super();
   }
 
-  public handle(p: Packet): [string, Packet] | NetworkError | null {
+  public handle(p: Packet): HandleResult | null {
     let err = super.handleIn(p);
     if (err) {
-      return err;
+      return new HandleResult("", p, err);
     }
 
     super.handleOut(p);
@@ -186,10 +224,10 @@ export class InternetGateway extends Node implements PacketHandler {
     super();
   }
 
-  public handle(p: Packet): [string, Packet] | NetworkError | null {
+  public handle(p: Packet): HandleResult | null {
     let err = super.handleIn(p);
     if (err) {
-      return err;
+      return new HandleResult("", p, err);
     }
 
     // fetch(p.payload).then((res) => {});
