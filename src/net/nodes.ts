@@ -117,18 +117,41 @@ export class Router extends Node {
   public add_route(subnet: Address4, node: string) {}
 }
 
+export enum MachineType {
+  Computer,
+  Car,
+  Toaster,
+}
+
+function randomMachineType(): MachineType {
+  let num = Math.floor(Math.random() * 3);
+  switch (num) {
+    case 0:
+      return MachineType.Computer;
+    case 1:
+      return MachineType.Car;
+    default:
+      return MachineType.Toaster;
+  }
+}
+
 export class Machine extends Node {
   private ip: Address4;
+  public mType: MachineType = randomMachineType();
 
   constructor(
     ports: number,
     ip: Address4,
     id?: string,
+    mType?: MachineType,
     x?: number,
     y?: number
   ) {
     super(ports, id, x, y);
     this.ip = ip;
+    if (mType) {
+      this.mType = mType;
+    }
   }
 
   public handle(p: Packet, net: Network): Array<NetworkError> | null {
