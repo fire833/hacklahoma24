@@ -30,7 +30,7 @@
     display: flex;
     flex-direction: row;
 
-    padding: 20px;
+    padding: 15.5px;
     margin: 0 auto;
     background-color: var(--color-bg);
 
