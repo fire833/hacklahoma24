@@ -1,0 +1,36 @@
+{
+    "title": "Tutorial 2",
+    "sections": [
+      {
+        "title": "Introduction",
+        "steps": [
+          {
+            "text": "Welcome to the first tutorial! In this tutorial you will learn about the basics of the internet."
+          }
+        ]
+      },
+      {
+        "title": "Setting Up",
+        "steps": [
+          {
+            "text": "To get started, make sure you have Node.js and npm installed on your machine."
+          },
+          {
+            "text": "Run the following command to create a new Svelte project: `npx degit sveltejs/template svelte-tutorial`."
+          }
+        ]
+      },
+      {
+        "title": "Creating Components",
+        "steps": [
+          {
+            "text": "In Svelte, components are the building blocks of your application. Create a new component by adding a .svelte file."
+          },
+          {
+            "text": "Add your component's markup, script, and styles within the .svelte file."
+          }
+        ]
+      }
+    ]
+  }
+  
