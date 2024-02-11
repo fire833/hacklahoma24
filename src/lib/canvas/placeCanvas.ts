@@ -3,7 +3,7 @@ import { Viewport } from "pixi-viewport";
 import Envelope from "../../assets/sprites/Envelope.png";
 import Router from "../../assets/sprites/Router.png";
 import { VisMode, visMode, speed } from "../../stores";
-import type { Network } from "../../net/net.js";
+import type { Network, Node } from "../../net/net.js";
 
 export let viewport: Viewport;
 export let app: PIXI.Application<HTMLCanvasElement>;
@@ -47,8 +47,10 @@ export function placeCanvas(canvas: HTMLElement) {
 
 export async function addStarterObjects(net: Network) {
   // load the texture we need
-  const envelopeTexture = await PIXI.Assets.load(Envelope);
-  const routerTexture = await PIXI.Assets.load(Router);
+  const envelopeTexture: PIXI.Texture<PIXI.Resource> =
+    await PIXI.Assets.load(Envelope);
+  const routerTexture: PIXI.Texture<PIXI.Resource> =
+    await PIXI.Assets.load(Router);
 
   let text = new PIXI.HTMLText("Speed: " + speed + " visMode: " + visMode, {
     fontSize: 20,
@@ -61,23 +63,75 @@ export async function addStarterObjects(net: Network) {
     text.text = "Speed: " + value;
   });
 
-  net.get_graph()[0].forEach((v, k) => {
-    // This creates a texture from a 'bunny.png' image
-    const nodeSprite = new PIXI.Sprite(routerTexture);
-    nodeSprite.roundPixels = true;
+  let graph = net.get_graph();
 
-    // Setup the position of the bunny
-    if (v.nodeX) {
-      nodeSprite.x = v.nodeX;
-    } else {
-      nodeSprite.x = 0;
-    }
-    if (v.nodeY) {
-      nodeSprite.y = v.nodeY;
-    } else {
-      nodeSprite.y = 0;
-    }
+  // Make fake edges for debugging
 
-    viewport.addChild(nodeSprite);
+  let edges: string[][] = [];
+
+  let nodeArray = Array.from(graph[0].keys());
+
+  graph[0].forEach((v, k) => {
+    let otherNode: string =
+      nodeArray[Math.floor(Math.random() * nodeArray.length)];
+    edges.push(Array(k, otherNode));
   });
+
+  console.log(edges);
+
+  // Draw edges
+
+  edges.forEach((edge) => {
+    drawLine(edge, graph[0]);
+  });
+
+  graph[0].forEach((v, k) => {
+    drawNode(v, routerTexture);
+  });
+}
+
+function drawLine(edge: string[], nodeMap: Map<string, Node>) {
+  let graphic = new PIXI.Graphics();
+
+  viewport.addChild(graphic);
+  let x1 = 0;
+  let y1 = 0;
+
+  if (undefined !== nodeMap.get(edge[0])) {
+    x1 = nodeMap.get(edge[0]).nodeX;
+    y1 = nodeMap.get(edge[0]).nodeY;
+  }
+
+  let x2 = 0;
+  let y2 = 0;
+  if (undefined !== nodeMap.get(edge[1])) {
+    x2 = nodeMap.get(edge[1]).nodeX;
+    y2 = nodeMap.get(edge[1]).nodeY;
+  }
+
+  graphic.moveTo(x1, y1);
+
+  graphic.lineStyle(2, 0xffffff).lineTo(x2, y2);
+
+  graphic.closePath();
+  graphic.endFill();
+
+  viewport.addChild(graphic);
+}
+
+function drawNode(node: Node, texture: PIXI.Texture<PIXI.Resource>) {
+  const nodeSprite = new PIXI.Sprite(texture);
+
+  if (node.nodeX) {
+    nodeSprite.x = node.nodeX - nodeSprite.width / 2;
+  } else {
+    nodeSprite.x = 0;
+  }
+  if (node.nodeY) {
+    nodeSprite.y = node.nodeY - nodeSprite.height / 2;
+  } else {
+    nodeSprite.y = 0;
+  }
+
+  viewport.addChild(nodeSprite);
 }
