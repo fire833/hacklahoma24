@@ -5,6 +5,8 @@
   import { Machine, Switch } from "../net/subnodes";
   import { Address4 } from "ip-address";
 
+  const urlParam = new URLSearchParams(window.location.search).get("level");
+
   let net = new Network();
   net.add_node(new Switch(16, undefined, 20, 20));
   net.add_node(new Switch(16, undefined, -20, -40));
