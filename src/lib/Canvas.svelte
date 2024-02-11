@@ -20,6 +20,7 @@
 
 <style>
   .canvas {
+    position: absolute;
     width: 100%;
   }
 </style>

@@ -13,6 +13,13 @@ export class VisNode {
   // Creates PIXI Sprite object and returns it
   makeGraphic(node: Node, texture: PIXI.Texture<PIXI.Resource>): PIXI.Sprite {
     const nodeSprite = new PIXI.Sprite(texture);
+    nodeSprite.cursor = "pointer";
+    nodeSprite.eventMode = "static";
+    nodeSprite.interactive = true;
+
+    nodeSprite.on("pointerdown", () => {
+      nodeSprite.scale = new PIXI.Point(2, 2);
+    });
 
     if (node.nodeX) {
       nodeSprite.x = node.nodeX - nodeSprite.width / 2;

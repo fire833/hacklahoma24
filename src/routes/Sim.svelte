@@ -119,7 +119,6 @@
     display: flex;
   }
   .ui {
-    z-index: 100;
     position: absolute;
     left: 0;
     top: 0;
@@ -127,7 +126,7 @@
     height: 100%;
   }
   .canvas {
-    z-index: 0;
+    z-index: 10;
     position: absolute;
     left: 0;
     top: 0;

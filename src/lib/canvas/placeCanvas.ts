@@ -25,6 +25,8 @@ export function placeCanvas(canvas: HTMLElement) {
     events: app.renderer.events,
   });
 
+  app.view.setAttribute("style", "cursor:auto");
+
   canvas.replaceChildren(app.view);
   app.stage.addChild(viewport);
 
