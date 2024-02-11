@@ -51,7 +51,7 @@
     counter = counter + 1;
     try {
       currentTut = eval(`tutorialData${counter}`);
-      console.log("Next")
+      console.log("Next");
     } catch (error) {
       console.log(error);
     }
@@ -63,9 +63,9 @@
     counter = counter - 1;
     try {
       currentTut = eval(`tutorialData${counter}`);
-      console.log("Prev")
+      console.log("Prev");
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
     renderTutorialJSON(currentTut);
   }
@@ -130,7 +130,7 @@
     {#if counter <= 3}
       <button on:click={forwardClick}>Next</button>
     {/if}
-  <!-- {:else if setting === SideBarModes.PacketFlows}
+    <!-- {:else if setting === SideBarModes.PacketFlows}
     {#if currNode}
       <h2>Node {currNode?.id} Incoming Packets Log</h2>
       {#each currNode.inPacketLog as p}
@@ -145,8 +145,8 @@
           MAC: {p.srcmac} SRCIP: {p.srcip} DSTMAC: {p.dstmac} DSTIP: {p.dstip} TYPE:
           {p.app}
         </h3>
-      {/each} -->
-    {/if}
+      {/each}
+    {/if} -->
   {/if}
 </div>
 
