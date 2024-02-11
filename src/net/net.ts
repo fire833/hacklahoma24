@@ -128,7 +128,10 @@ export abstract class Node {
 
   public tick(net: Network) {
     for (let packet of this.currPacketQueue) {
-      this.handle(packet, net);
+      let e = this.handle(packet, net);
+      if (e !== null) {
+        console.log(e);
+      }
     }
 
     this.currPacketQueue = this.nextPacketQueue;
@@ -276,6 +279,32 @@ export class Network {
   public tick() {
     for (let node of this.net) {
       node[1].tick(this);
+      if (node[1].nodeType === NodeType.Machine) {
+        let iface = node[1].interfaces.get(0);
+        if (iface)
+          node[1].appendPacket(
+            new Packet(
+              node[1].id,
+              iface.mac,
+              broadcastmac,
+              new Address4("10.0.0.1/24"),
+              new Address4("1.1.1.1/32"),
+              "",
+              PacketType.ARPRequest
+            )
+          );
+      }
+    }
+
+    let index = Math.floor(Math.random() * this.net.size) + 1;
+    let count = 0;
+    for (let val of this.net.values()) {
+      count++;
+      if (count === index) {
+        this.active_node = val.id;
+        console.log(this.active_node);
+        break;
+      }
     }
   }
 

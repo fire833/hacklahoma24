@@ -6,14 +6,14 @@
   import tutorialData2 from "../../../public/tutorials/Tutorial_2.json";
   import tutorialData3 from "../../../public/tutorials/Tutorial_3.json";
 
-  export let currentTut : any;
+  export let currentTut: any;
   export let renderTutorialJSON: (json: any) => void;
 
   enum SideBarModes {
     Tutorial,
     Node,
     PacketFlows,
-    NodeEditing,
+    // NodeEditing,
   }
 
   let setting: SideBarModes = SideBarModes.Tutorial;
@@ -29,7 +29,7 @@
 
   export let open = false;
   export let net: Network;
-  console.log(net)
+  console.log(net);
   $: currNode = net.net.get(net.active_node);
 
   let nodeName = "Test Node";
@@ -45,14 +45,14 @@
     event?.preventDefault();
     counter = counter + 1;
     currentTut = eval(`tutorialData${counter}`);
-    renderTutorialJSON(currentTut)
+    renderTutorialJSON(currentTut);
   }
 
   function backwardClick() {
     event?.preventDefault();
     counter = counter - 1;
     currentTut = eval(`tutorialData${counter}`);
-    renderTutorialJSON(currentTut)
+    renderTutorialJSON(currentTut);
   }
 </script>
 
@@ -68,8 +68,17 @@
 
   {#if setting === SideBarModes.Node}
     <h1>{nodeName}</h1>
+
+    <button
+      on:click={() => {
+        console.log("ticked the network");
+        net.tick();
+      }}>Tick the network!</button
+    >
+
     <h2>Interfaces</h2>
 
+    {console.log(currNode)}
     {#if currNode}
       {#each currNode.interfaces as [index, iface]}
         <div>
@@ -105,7 +114,24 @@
     {#if counter <= 6}
       <a href="sim?level=tutorial_1" on:click={forwardClick}>Next</a>
     {/if}
-  {:else if setting === SideBarModes.PacketFlows}{:else if setting === SideBarModes.NodeEditing}{/if}
+  {:else if setting === SideBarModes.PacketFlows}
+    {#if currNode}
+      <h2>Node {currNode?.id} Incoming Packets Log</h2>
+      {#each currNode.inPacketLog as p}
+        <h3>
+          MAC: {p.srcmac} SRCIP: {p.srcip} DSTMAC: {p.dstmac} DSTIP: {p.dstip} TYPE:
+          {p.app}
+        </h3>
+      {/each}
+      <h2>Node {currNode?.id} Outgoing Packets Log</h2>
+      {#each currNode.outPacketLog as p}
+        <h3>
+          MAC: {p.srcmac} SRCIP: {p.srcip} DSTMAC: {p.dstmac} DSTIP: {p.dstip} TYPE:
+          {p.app}
+        </h3>
+      {/each}
+    {/if}
+  {/if}
 </div>
 
 <style>
