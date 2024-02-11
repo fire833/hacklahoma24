@@ -7,8 +7,9 @@
     setting = value;
   });
 
-  function updateSpeed(num: Number) {
-    speed.update(() => num);
+  function updateSpeed() {
+    setting = document.getElementById("sendSpeed").value;
+    speed.update(() => setting);
   }
 </script>
 
@@ -17,8 +18,7 @@
     type="range"
     min="1"
     max="100"
-    value={setting}
-    on:change={() => updateSpeed(setting)}
+    on:change={() => updateSpeed()}
     class="slider"
     id="sendSpeed"
   />
