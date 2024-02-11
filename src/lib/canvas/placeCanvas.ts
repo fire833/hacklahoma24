@@ -115,7 +115,7 @@ function drawNode(node: Node, texture: PIXI.Texture<PIXI.Resource>) {
     nodeSprite.x = 0;
   }
   if (node.nodeY) {
-    nodeSprite.y = node.nodeY - nodeSprite.height / 2;
+    nodeSprite.y = node.nodeY - (3 * nodeSprite.height) / 4;
   } else {
     nodeSprite.y = 0;
   }
