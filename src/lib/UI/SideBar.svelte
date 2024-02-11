@@ -5,6 +5,7 @@
   import tutorialData1 from "../../../public/tutorials/Tutorial_1.json";
   import tutorialData2 from "../../../public/tutorials/Tutorial_2.json";
   import tutorialData3 from "../../../public/tutorials/Tutorial_3.json";
+  import tutorialData4 from "../../../public/tutorials/Tutorial_4.json";
 
   export let currentTut: any;
   export let renderTutorialJSON: (json: any) => void;
@@ -111,7 +112,7 @@
       <a href="sim?level=tutorial_1" on:click={backwardClick}>Back</a>
     {/if}
 
-    {#if counter <= 6}
+    {#if counter <= 3}
       <a href="sim?level=tutorial_1" on:click={forwardClick}>Next</a>
     {/if}
   {:else if setting === SideBarModes.PacketFlows}

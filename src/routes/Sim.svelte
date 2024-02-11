@@ -8,7 +8,8 @@
   import { Address4 } from "ip-address/dist/ipv4";
   import tutorialData1 from "../../public/tutorials/Tutorial_1.json";
   import tutorialData2 from "../../public/tutorials/Tutorial_2.json";
-  import tutorialData3 from "../../public/tutorials/Tutorial_3.json"
+  import tutorialData3 from "../../public/tutorials/Tutorial_3.json";
+  import tutorialData4 from "../../public/tutorials/Tutorial_4.json";
 
 
   let currentTut = tutorialData1;
