@@ -210,7 +210,7 @@ function randomMachineType(): MachineType {
 }
 
 export class Machine extends Node {
-  private ip: Address4;
+  public ip: Address4;
   public mType: MachineType = randomMachineType();
 
   constructor(

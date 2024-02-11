@@ -292,7 +292,7 @@ export class Network {
   public get_graph(): [Map<string, Node>, Array<[string, string]>] {
     let arr = Array();
     for (let node of this.net) {
-      arr.push(node[1].get_edges());
+      arr = [...arr, node[1].get_edges()];
     }
 
     return [this.net, arr];
@@ -308,7 +308,7 @@ export class Network {
     if (!src || !dest) return NoNodeError;
 
     src.add_edge(dest);
-    src.add_edge(src);
+    dest.add_edge(src);
 
     return null;
   }
