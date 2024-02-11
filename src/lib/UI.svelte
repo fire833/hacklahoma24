@@ -21,9 +21,6 @@
 </div>
 
 <style>
-  #ui {
-    display: block;
-  }
   .topbar {
     position: absolute;
     top: 0;
@@ -34,8 +31,10 @@
 
   .sidebar {
     position: absolute;
-    top: 4em;
+    top: 0;
+    bottom: 0;
     left: 0;
+    display: flex;
   }
 
   .speedbar {
