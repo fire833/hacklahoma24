@@ -32,7 +32,7 @@
 
     padding: 20px;
     margin: 0 auto;
-    background-color: rgb(58, 52, 52);
+    background-color: var(--color-bg);
 
     align-items: center;
     gap: 20px;

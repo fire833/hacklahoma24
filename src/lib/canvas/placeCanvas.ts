@@ -3,6 +3,7 @@ import * as PIXI from "pixi.js";
 
 export let viewport: Viewport;
 export let app: PIXI.Application<HTMLCanvasElement>;
+export let ticker = PIXI.Ticker.shared;
 
 export function placeCanvas(canvas: HTMLElement) {
   PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;

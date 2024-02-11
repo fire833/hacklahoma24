@@ -31,7 +31,7 @@
     padding: 0;
   }
   dialog::backdrop {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--color-trans-gray);
   }
   dialog > div {
     padding: 1em;

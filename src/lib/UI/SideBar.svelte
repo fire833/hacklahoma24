@@ -29,6 +29,10 @@
   }
 
   export let open = false;
+  function toggle() {
+    open = !open;
+  }
+
   export let net: Network;
   console.log(net);
   $: currNode = net.net.get(net.active_node);
@@ -135,13 +139,26 @@
   {/if}
 </div>
 
+<button class={open ? "toggle open" : "toggle close"} on:click={toggle}
+  ><div class="pill"></div></button
+>
+
 <style>
   .close {
-    transform: translate(-100%, 0);
+    transform: translate(-30vw, 0);
   }
 
   .open {
     transform: translate(0, 0);
+  }
+  .pill {
+    background-color: rgba(256, 256, 256, 0.4);
+  }
+
+  .toggle {
+    z-index: 20;
+    border-radius: 0 8px 8px 0;
+    transition: transform 0.3s ease;
   }
 
   #bg {
@@ -149,10 +166,10 @@
     text-align: left;
     justify-content: space-between;
     align-content: center;
-    background-color: rgb(58, 52, 52);
+    background-color: var(--color-bg);
     padding: 2rem;
     width: 25vw;
-    height: 80vh;
+    height: 70vh;
     margin: auto 0;
     overflow-y: auto;
 

@@ -2,7 +2,7 @@
   import type { Network } from "../../net/net.js";
   import { Machine, Router, Switch } from "../../net/subnodes.js";
   import { VisMode, visMode } from "../../stores.js";
-  import { writable } from 'svelte/store'
+  import { writable } from "svelte/store";
   import Modal from "./Modal.svelte";
 
   let setting: VisMode;
@@ -18,29 +18,28 @@
 
   function updateMode(mode: VisMode) {
     visMode.update(() => mode);
-    
-    }
+  }
 
   function popModal(mode) {
-    if(mode === "PHYS") {
+    if (mode === "PHYS") {
       showModal1 = true;
       showModal2 = false;
       showModal3 = false;
       showModal4 = false;
     }
-    if(mode === "LINK") {
+    if (mode === "LINK") {
       showModal2 = true;
       showModal1 = false;
       showModal3 = false;
       showModal4 = false;
     }
-    if(mode === "IP") {
+    if (mode === "IP") {
       showModal3 = true;
       showModal1 = false;
       showModal2 = false;
       showModal4 = false;
     }
-    if(mode === "APP") {
+    if (mode === "APP") {
       showModal4 = true;
       showModal1 = false;
       showModal3 = false;
@@ -95,65 +94,83 @@
   <p>Layer:</p>
   <div class="button-group">
     {#each Object.values(VisMode).filter((value) => typeof value == "string") as mode}
-      <button class:sunset={setting === mode} on:click={() => { updateMode(mode); popModal(mode) }}>
+      <button
+        class:sunset={setting === mode}
+        on:click={() => {
+          updateMode(mode);
+          popModal(mode);
+        }}
+      >
         {mode}
       </button>
     {/each}
   </div>
 
-  <button on:click={() => (open = !open)}> Sidebar Toggle </button>
   <button on:click={exportNetworkToJson}> Export Network </button>
 </div>
 
 {#if showModal1}
-    <Modal showModal={showModal1}>
-      <h2>The Physical Layer</h2>
-      <p>The physical layer is the lowest layer within the OSI (Open Systems Interconnection) model.
-        The main goal of this layer is to set and define the hardware characteristics of the network. 
-        This includes types of internet communication tools such as fiber optics, the representation of data, 
-        and the bandwidth. This allows for the rest of the network to work in harmony!
-      </p>
-    </Modal>
-  {/if}
+  <Modal showModal={showModal1}>
+    <h2>The Physical Layer</h2>
+    <p>
+      The physical layer is the lowest layer within the OSI (Open Systems
+      Interconnection) model. The main goal of this layer is to set and define
+      the hardware characteristics of the network. This includes types of
+      internet communication tools such as fiber optics, the representation of
+      data, and the bandwidth. This allows for the rest of the network to work
+      in harmony!
+    </p>
+  </Modal>
+{/if}
 
-  {#if showModal2}
+{#if showModal2}
   <Modal showModal={showModal2}>
     <h2>The Link Layer</h2>
-    <p>The link layer is the second layer within the OSI model. This layer is responsible for making sure
-      there is a successful transmission of frames between devices within the same network. In order for the 
-      layer to work, the layer relies on a Media Access Control (MAC) address to identify other devices within the network.
-      The layer also looks at error detection and flow control.
+    <p>
+      The link layer is the second layer within the OSI model. This layer is
+      responsible for making sure there is a successful transmission of frames
+      between devices within the same network. In order for the layer to work,
+      the layer relies on a Media Access Control (MAC) address to identify other
+      devices within the network. The layer also looks at error detection and
+      flow control.
     </p>
   </Modal>
 {/if}
 
 {#if showModal3}
-    <Modal showModal={showModal3}>
-      <h2>The IP Layer</h2>
-      <p>The Internet Protocol (IP) layer is the third layer within the OSI model. This layer is responsible 
-        for the addressing, routing, and sending of packets of data between networks. This allows for communication between
-        networks which at the root is basically the internet as we know it. This layer is probably the most well known layer when thinking
-        about the internet and one that is a very important piece within the OSI model.  
-      </p>
-    </Modal>
-  {/if}
+  <Modal showModal={showModal3}>
+    <h2>The IP Layer</h2>
+    <p>
+      The Internet Protocol (IP) layer is the third layer within the OSI model.
+      This layer is responsible for the addressing, routing, and sending of
+      packets of data between networks. This allows for communication between
+      networks which at the root is basically the internet as we know it. This
+      layer is probably the most well known layer when thinking about the
+      internet and one that is a very important piece within the OSI model.
+    </p>
+  </Modal>
+{/if}
 
-  {#if showModal4}
-    <Modal showModal={showModal4}>
-      <h2>The Application Layer</h2>
-      <p>The application layer is the last layer within the OSI model. This layer is what connects and allows the user to
-        view and configure networks. This includes data representation to the user and application, it provides SSH opportunities,
-      and simply allows for web services such as HTTP to exist and function. This layer provides the easiest view into how networks
-    operate.  </p>
-    </Modal>
-  {/if}
+{#if showModal4}
+  <Modal showModal={showModal4}>
+    <h2>The Application Layer</h2>
+    <p>
+      The application layer is the last layer within the OSI model. This layer
+      is what connects and allows the user to view and configure networks. This
+      includes data representation to the user and application, it provides SSH
+      opportunities, and simply allows for web services such as HTTP to exist
+      and function. This layer provides the easiest view into how networks
+      operate.
+    </p>
+  </Modal>
+{/if}
 
 <style>
   #bg {
     z-index: 20;
     display: flex;
     justify-content: space-between;
-    background-color: rgb(58, 52, 52);
+    background-color: var(--color-bg);
     padding: 10px 20px;
     margin: 0 auto;
     align-items: center;

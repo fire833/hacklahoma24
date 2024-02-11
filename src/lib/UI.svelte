@@ -3,10 +3,11 @@
   import TopBar from "./UI/TopBar.svelte";
   import SpeedBar from "./UI/SpeedBar.svelte";
   import type { Network } from "../net/net";
-  import tutorialData1 from "../../public/tutorials/Tutorial_1.json"
+  import tutorialData1 from "../../public/tutorials/Tutorial_1.json";
   import tutorialData2 from "../../public/tutorials/Tutorial_2.json";
   import tutorialData3 from "../../public/tutorials/Tutorial_3.json";
   import tutorialData4 from "../../public/tutorials/Tutorial_4.json";
+  import { onMount } from "svelte";
 
   let open = false;
   export let net: Network;
@@ -20,7 +21,7 @@
   </div>
 
   <div class="sidebar">
-    <SideBar {open} {net} currentTut={currentTut} renderTutorialJSON={renderTutorialJSON} ></SideBar>
+    <SideBar {open} {net} {currentTut} {renderTutorialJSON}></SideBar>
   </div>
 
   <div class="speedbar">
@@ -39,7 +40,6 @@
 
   .sidebar {
     position: absolute;
-    top: 0;
     bottom: 0;
     left: 0;
     display: flex;

@@ -21,7 +21,7 @@
     justify-content: space-between;
     align-items: center;
 
-    border-left: 2px solid rgb(190, 29, 29);
+    border-left: 2px solid var(--color-accent);
     padding-left: 1rem;
     margin-top: 10px;
   }

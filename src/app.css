@@ -11,6 +11,13 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --color-bg: rgb(54, 52, 58);
+  --color-button-bg: rgb(26, 26, 26);
+  --color-border: rgba(13, 49, 148, 0.568);
+  --color-accent: rgb(190, 29, 29);
+  --color-pink: #f890e7;
+  --color-trans-gray: rgba(0, 0, 0, 0.3);
 }
 
 a {

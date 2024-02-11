@@ -9,7 +9,7 @@ import Toaster from "../../assets/sprites/Toaster.png";
 import Car from "../../assets/sprites/Car.png";
 import Computer from "../../assets/sprites/Computer.png";
 
-import { app } from "./placeCanvas.js";
+import { app, ticker } from "./placeCanvas.js";
 
 export let dragging: any;
 
@@ -27,13 +27,18 @@ export class SimObject {
     this.setUpDrag();
   }
 
-  tick(): void {}
+  startTicking(): void {
+    ticker.add((time) => {
+      app.renderer.render(app.stage);
+      this.net.tick();
+    });
+  }
 
-  async loadTextures(): Promise<Map<NodeType | MachineType, PIXI.Texture<PIXI.Resource>[]>> {
-    let textureMap: Map<NodeType | MachineType, PIXI.Texture<PIXI.Resource>[]> = new Map<
-      NodeType | MachineType,
-      PIXI.Texture<PIXI.Resource>[]
-    >();
+  async loadTextures(): Promise<
+    Map<NodeType | MachineType, PIXI.Texture<PIXI.Resource>[]>
+  > {
+    let textureMap: Map<NodeType | MachineType, PIXI.Texture<PIXI.Resource>[]> =
+      new Map<NodeType | MachineType, PIXI.Texture<PIXI.Resource>[]>();
 
     textureMap.set(NodeType.Router, [await PIXI.Assets.load(Router)]);
     textureMap.set(NodeType.Switch, [await PIXI.Assets.load(Switch)]);
@@ -45,8 +50,8 @@ export class SimObject {
   }
 
   async buildObjects(net: Network) {
-    let textureMap: Map<NodeType | MachineType, PIXI.Texture<PIXI.Resource>[]>
-      = await this.loadTextures();
+    let textureMap: Map<NodeType | MachineType, PIXI.Texture<PIXI.Resource>[]> =
+      await this.loadTextures();
     // load the texture we need
     let graph = net.get_graph();
 
@@ -70,9 +75,9 @@ export class SimObject {
     // Draw nodes
     graph[0].forEach((v, k) => {
       let texture;
-      if(v.nodeType === NodeType.Router || v.nodeType === NodeType.Switch) {
+      if (v.nodeType === NodeType.Router || v.nodeType === NodeType.Switch) {
         let textures = textureMap.get(v.nodeType);
-        console.log(Math.floor(Math.random() * textures?.length))
+        console.log(Math.floor(Math.random() * textures?.length));
         let g = new VisNode(
           v,
           textures[Math.floor(Math.random() * textures.length)]
@@ -97,7 +102,7 @@ export class SimObject {
             break;
         }
       }
-      
+
       if (texture) {
         let g = new VisNode(v, texture);
         this.nodes.push(g);
@@ -106,7 +111,6 @@ export class SimObject {
         app.stage.addChild(g.graphic);
       }
     });
-
   }
 
   setUpDrag() {

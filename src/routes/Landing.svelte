@@ -19,7 +19,7 @@
   h1 {
     font-family: "Streamster";
     font-size: 10rem;
-    color: #f890e7;
+    color: var(--color-pink);
     margin-top: 0;
     margin-bottom: 5rem;
   }
