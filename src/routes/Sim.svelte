@@ -11,17 +11,17 @@
   $: openTutModal = urlParam === "tutorial_1";
 
   let net = new Network();
-  let a = new Switch(16, undefined, 100, -100);
-  let b = new Switch(16, undefined, -200, -40);
-  let c = new Switch(16, undefined, 200, 60);
-  let d = new Switch(16, undefined, -100, -80);
-  let e = new Switch(16, undefined, -40, 40);
+  let a = new Switch(16, undefined, 300, 300);
+  let b = new Switch(16, undefined, 600, 200);
+  let c = new Switch(16, undefined, 200, 250);
+  let d = new Switch(16, undefined, 500, 80);
+  let e = new Switch(16, undefined, 340, 140);
   let m = new Machine(
     2,
     new Address4("10.0.3.4/24"),
     undefined,
     undefined,
-    80,
+    200,
     80
   );
   net.add_node(a);

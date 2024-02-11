@@ -1,9 +1,11 @@
 import * as PIXI from "pixi.js";
 import type { Network, Node } from "../../net/net.js";
+import { viewport, app, placeCanvas } from "./placeCanvas.js";
+import { SimObject } from "./sim.js";
 
 export class VisNode {
   node: Node | undefined;
-  graphic: PIXI.Sprite | undefined;
+  graphic: PIXI.Sprite;
 
   constructor(node: Node, texture: PIXI.Texture<PIXI.Resource>) {
     this.node = node;
@@ -13,13 +15,10 @@ export class VisNode {
   // Creates PIXI Sprite object and returns it
   makeGraphic(node: Node, texture: PIXI.Texture<PIXI.Resource>): PIXI.Sprite {
     const nodeSprite = new PIXI.Sprite(texture);
+
     nodeSprite.cursor = "pointer";
     nodeSprite.eventMode = "static";
     nodeSprite.interactive = true;
-
-    nodeSprite.on("pointerdown", () => {
-      nodeSprite.scale = new PIXI.Point(2, 2);
-    });
 
     if (node.nodeX) {
       nodeSprite.x = node.nodeX - nodeSprite.width / 2;

@@ -29,7 +29,6 @@
     left: 0;
     right: 0;
     display: flex;
-    z-index: 20;
   }
 
   .sidebar {
@@ -38,7 +37,6 @@
     bottom: 0;
     left: 0;
     display: flex;
-    z-index: 20;
   }
 
   .speedbar {

@@ -102,6 +102,7 @@
   }
 
   #bg {
+    z-index: 20;
     text-align: left;
     justify-content: space-between;
     align-content: center;

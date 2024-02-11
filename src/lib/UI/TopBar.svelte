@@ -72,6 +72,7 @@
 
 <style>
   #bg {
+    z-index: 20;
     display: flex;
     justify-content: space-between;
     background-color: rgb(58, 52, 52);

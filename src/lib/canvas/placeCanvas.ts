@@ -30,8 +30,6 @@ export function placeCanvas(canvas: HTMLElement) {
   canvas.replaceChildren(app.view);
   app.stage.addChild(viewport);
 
-  app.stage.position.y = window.innerHeight / 2;
-  app.stage.position.x = window.innerWidth / 2;
   app.stage.scale.y = 2;
   app.stage.scale.x = 2;
 
