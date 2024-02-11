@@ -13,29 +13,29 @@
     visMode.update(() => mode);
   }
 
-    // Function to export the network object to JSON
+  // Function to export the network object to JSON
   const exportNetworkToJson = () => {
     let switchArray = [];
     let routerArray = [];
     let machineArray = [];
 
-    for(let object of net.net.values()) {
-      if(object instanceof(Router)) {
+    for (let object of net.net.values()) {
+      if (object instanceof Router) {
         routerArray.push(object.toJSON());
-      } else if(object instanceof(Machine)) {
+      } else if (object instanceof Machine) {
         machineArray.push(object.toJSON());
-      } else if(object instanceof(Switch)) {
+      } else if (object instanceof Switch) {
         switchArray.push(object.toJSON());
       }
     }
 
     let outputJSON = {
-      "network": {
-        "switches": switchArray,
-        "routers": routerArray,
-        "machines": machineArray
-      }
-    }
+      network: {
+        switches: switchArray,
+        routers: routerArray,
+        machines: machineArray,
+      },
+    };
 
     const jsonData = JSON.stringify(outputJSON);
     const blob = new Blob([jsonData], { type: "application/json" });
@@ -50,10 +50,10 @@
 
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
-  }
+  };
 
   export let open = false;
-  export let net : Network
+  export let net: Network;
 </script>
 
 <div id="bg">

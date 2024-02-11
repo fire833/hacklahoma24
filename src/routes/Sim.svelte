@@ -94,7 +94,7 @@
     </Modal>
   {/if}
   <div class="ui">
-    <UI {net}/>
+    <UI {net} />
   </div>
   <div class="canvas">
     <Canvas {net} />

@@ -5,12 +5,12 @@
   import type { Network } from "../net/net";
 
   let open = false;
-  export let net : Network
+  export let net: Network;
 </script>
 
 <div id="ui">
   <div class="topbar">
-    <TopBar net={net} bind:open></TopBar>
+    <TopBar {net} bind:open></TopBar>
   </div>
 
   <div class="sidebar">

@@ -2,7 +2,7 @@
   import Car from "../../assets/sprites/Car.png";
   import Computer from "../../assets/sprites/Computer.png";
   import Router from "../../assets/sprites/Router.png";
-  import { onMount } from 'svelte';
+  import { onMount } from "svelte";
   import { Link } from "svelte-routing";
   let current = "";
   let applications = [
@@ -11,10 +11,7 @@
     { name: "Netflix", logo: Router },
   ];
 
-
   const urlParam = new URLSearchParams(window.location.search).get("level");
-
-
 </script>
 
 {#each applications as { name, logo } (logo)}

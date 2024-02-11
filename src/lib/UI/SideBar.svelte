@@ -9,12 +9,12 @@
 
   enum SideBarModes {
     Tutorial,
-    Node
+    Node,
   }
 
-  let setting : SideBarModes = SideBarModes.Tutorial
+  let setting: SideBarModes = SideBarModes.Tutorial;
 
-  let sideBarMode = writable<SideBarModes>(SideBarModes.Tutorial)
+  let sideBarMode = writable<SideBarModes>(SideBarModes.Tutorial);
   sideBarMode.subscribe((value) => {
     setting = value;
   });
@@ -25,7 +25,6 @@
 
   export let open = false;
   let nodeName = "Test Node";
-
 
   let counter = 1;
   let numberOfTimes = 3;
@@ -48,27 +47,27 @@
 </script>
 
 <div id="bg" class={open ? "open" : "close"}>
-
-  {#each Object.values(SideBarModes).filter((value) => typeof value == "string") as mode} 
-    <button class:sunset={setting === SideBarModes[mode]} on:click={() => updateButton(SideBarModes[mode])}>
+  {#each Object.values(SideBarModes).filter((value) => typeof value == "string") as mode}
+    <button
+      class:sunset={setting === SideBarModes[mode]}
+      on:click={() => updateButton(SideBarModes[mode])}
+    >
       {mode}
     </button>
   {/each}
 
   {#if setting === SideBarModes.Node}
+    <h1>{nodeName}</h1>
+    <h2>Interfaces</h2>
 
-  <h1>{nodeName}</h1>
-  <h2>Interfaces</h2>
+    {#each interfaces as i}
+      <Interface />
+    {/each}
 
-  {#each interfaces as i}
-    <Interface />
-  {/each}
-
-  <h2>Applications</h2>
-  <div id="apps-container">
-    <AppButtons />
-  </div>
-
+    <h2>Applications</h2>
+    <div id="apps-container">
+      <AppButtons />
+    </div>
   {:else if setting === SideBarModes.Tutorial}
     {#if currentTut}
       <h1>{currentTut.title}</h1>
@@ -76,22 +75,19 @@
       {#each currentTut.sections as section (section.title)}
         <div>
           <h2>{section.title}</h2>
-          {#each section.steps as step(step.text)}
+          {#each section.steps as step (step.text)}
             <p>{step.text}</p>
           {/each}
         </div>
       {/each}
     {/if}
 
-
     {#if counter >= 2}
-      <a href="sim?level=tutorial_{counter}"on:click={backwardClick}>Back</a>
-
+      <a href="sim?level=tutorial_{counter}" on:click={backwardClick}>Back</a>
     {/if}
 
-    {#if counter <= 6} 
+    {#if counter <= 6}
       <a href="sim?level=tutorial_{counter}" on:click={forwardClick}>Next</a>
-
     {/if}
   {/if}
 </div>
