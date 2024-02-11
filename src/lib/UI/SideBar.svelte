@@ -31,11 +31,11 @@ import Car from "../../assets/sprites/Car.png";
   
   {#each nameAmount as number (number)}
   <div id="name-div">
-    <img class="name-img" src={Toaster} alt="Image" />
-    <p>{ names1 }</p>
+    <p>{ names1 }</p>  
     <p>{ names2 }</p>
     <p>{ names3 }</p>
   </div>
+  <img class ="img2" src={ Toaster } alt = "Image">
     {/each}
   <div id="blocks-container">
   {#each applications as { name, logo } (logo)}  
@@ -60,11 +60,6 @@ import Car from "../../assets/sprites/Car.png";
     max-height: 500px;
   }
 
-  .name-img {
-    margin-left: 250px;
-    display: inline-block
-  }
-
   #name-div {
     border-left: 1px solid rgb(190, 29, 29);
     padding: 10px;
@@ -73,7 +68,14 @@ import Car from "../../assets/sprites/Car.png";
     font-size: 13.5px;
     line-height: 1;
     margin-left: 0;
-    margin-right: 300px;
+    margin-right: 500px;
+
+  }
+
+  .img2 {
+    position: relative;
+    top: -105px;
+    left: 150px;
   }
 
   #blocks-container {
@@ -95,7 +97,7 @@ import Car from "../../assets/sprites/Car.png";
   }
 
   #interf {
-    margin-right: 300px;
+    margin-right: 385px;
   }
 
   .close {
