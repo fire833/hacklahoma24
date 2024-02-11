@@ -6,13 +6,13 @@
   import { Address4 } from "ip-address";
 
   let net = new Network();
-  net.add_node(new Switch(16, undefined, 10, 10));
-  net.add_node(new Switch(16, undefined, -10, -20));
-  net.add_node(new Switch(16, undefined, 10, 30));
-  net.add_node(new Switch(16, undefined, -10, -40));
-  net.add_node(new Switch(16, undefined, 20, 10));
+  net.add_node(new Switch(16, undefined, 20, 20));
+  net.add_node(new Switch(16, undefined, -20, -40));
+  net.add_node(new Switch(16, undefined, 20, 60));
+  net.add_node(new Switch(16, undefined, -20, -80));
+  net.add_node(new Switch(16, undefined, 40, 20));
   net.add_node(
-    new Machine(2, new Address4("10.0.3.4/24"), undefined, undefined, 40, 40)
+    new Machine(2, new Address4("10.0.3.4/24"), undefined, undefined, 80, 80)
   );
 </script>
 
