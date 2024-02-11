@@ -43,4 +43,23 @@
     flex-direction: row;
     justify-content: space-between;
   }
+
+  input[type=range]{
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  input[type=range]::-webkit-slider-runnable-track {
+    background: #ddd;
+    border: none;
+    border-radius: 3px;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      border: none;
+      height: 16px;
+      width: 16px;
+      background: url("../../assets/sprites/Slider.png");
+  }
 </style>
