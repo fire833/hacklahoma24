@@ -53,7 +53,7 @@ h1 {
 
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 1px solid #ff926400;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
@@ -63,7 +63,7 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: #ff9264;
 }
 button:focus,
 button:focus-visible {
@@ -81,4 +81,10 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.sunset {
+  background: rgb(146,12,24);
+  background: linear-gradient(0deg, rgba(146,12,24,1) 0%, rgba(254,28,3,1) 40%, rgba(251,112,14,1) 69%, rgba(247,196,24,1) 100%); 
+  border-color:  rgb(146,12,24); 
 }

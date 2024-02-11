@@ -17,10 +17,10 @@
 <div id="bg">
   <p>Layer:</p>
   <div class="button-group">
-    {#each Object.values(VisMode).filter((value) => typeof value === "string") as mode}
-      <button class:active={setting === mode} on:click={() => updateMode(mode)}
-        >{mode}</button
-      >
+    {#each Object.values(VisMode).filter((value) => typeof value == "string") as mode}
+      <button class:sunset={setting === mode} on:click={() => updateMode(mode)}>
+        {mode}
+      </button>
     {/each}
   </div>
 
@@ -56,9 +56,5 @@
 
   .button-group button:first-child {
     border-radius: 8px 0 0 8px;
-  }
-
-  .active {
-    background-color: brown;
   }
 </style>
