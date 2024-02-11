@@ -11,27 +11,37 @@
         ]
       },
       {
-        "title": "Setting Up",
+        "title": "Background",
         "steps": [
           {
-            "text": "To get started, make sure you have Node.js and npm installed on your machine."
-          },
-          {
-            "text": "Run the following command to create a new Svelte project: `npx degit sveltejs/template svelte-tutorial`."
+            "text": "The concept of connecting the internet to retro-future invokes a fascinating juxtaposition of the past and the future, intertwining nostalgia with innovation. In the digital age, where advancements in technology propel us forward at an unprecedented pace, there's a yearning to revisit the simplicity and charm of bygone eras. By bridging the internet with retro-future themes, we evoke a sense of wonder and curiosity, exploring how the technologies of yesterday influence and shape the digital landscapes of tomorrow. It's a journey that invites us to reflect on the evolution of communication, envisioning a future that draws inspiration from the aesthetics and ideals of the past while leveraging the cutting-edge capabilities of modern connectivity."
           }
         ]
       },
       {
-        "title": "Creating Components",
+        "title": "Objective",
         "steps": [
           {
-            "text": "In Svelte, components are the building blocks of your application. Create a new component by adding a .svelte file."
+            "text": "Consider the challenge of navigating a dark room to locate your friend without the aid of calling out their name. It's undoubtedly a daunting task, isn't it?"
           },
           {
-            "text": "Add your component's markup, script, and styles within the .svelte file."
+            "text": "Networks face a similar challenge! Hosts struggle to locate other hosts without employing a comparable method."
+          },
+          {
+            "text": "To simulate this scenario, note the presence of two hosts on the grid. Switch to the \"Node\" tab and initiate a ping to the respective host. You will notice that the host now sends a packet to the destination host to get the needed information."
           }
         ]
       }
-    ]
+    ],
+    "network": {
+      "switches": [
+      ],
+      "routers": [
+      ],
+      "machines": [
+        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-wy1h6h00","fwRules":[],"nodeX":100,"nodeY":100},"ip":{"groups":4,"parsedAddress":["127","0","0","0"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.0","addressMinusSuffix":"127.0.0.0"},"mType":1},
+        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-pd33mcfl","fwRules":[],"nodeX":200,"nodeY":200},"ip":{"groups":4,"parsedAddress":["127","0","0","1"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.1","addressMinusSuffix":"127.0.0.1"},"mType":0}
+      ]
+    }
   }
   

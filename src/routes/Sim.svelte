@@ -5,6 +5,7 @@
   import { Machine, Router, Switch } from "../net/subnodes";
   import Modal from "../lib/UI/Modal.svelte";
   import { Address4 } from "ip-address/dist/ipv4";
+  import tutorialData1 from "../lib/UI/Tutorial_1.json";
 
   const urlParam = new URLSearchParams(window.location.search).get("level");
   $: openModal = urlParam === "upload";
@@ -39,6 +40,22 @@
 
   let uploadedFiles: any;
 
+  let set_edges = () => {
+    for(let key of net.net.keys()) {
+      let currDevice = net.net.get(key);
+
+      for(let loopDevice of net.net.values()) {
+        if(currDevice?.id !== loopDevice.id) {
+          try {
+            net.add_edge(currDevice?.id, loopDevice.id)
+          } catch (error) {
+            console.log(error)
+          }
+        }
+      }
+    }
+  }
+
   let handleFileUpload = (event: { target: { files: any } }) => {
     uploadedFiles = event.target.files;
   };
@@ -69,6 +86,7 @@
           }
 
           net = net;
+          set_edges();
         } catch (error) {
           console.log(`Error: ${error}`);
         }
@@ -76,6 +94,32 @@
       reader.readAsText(file);
     }
   };
+
+  if(urlParam === "tutorial_1") {
+    let parsedJSON = JSON.parse(JSON.stringify(tutorialData1)).network;
+        try {
+          net = new Network();
+          for (let currSwitch of parsedJSON.switches) {
+            net.add_node(Switch.parseJSON(JSON.stringify(currSwitch)));
+            console.log(Switch.parseJSON(JSON.stringify(currSwitch)));
+          }
+          console.log("Finish switches");
+          for (let currRouter of parsedJSON.routers) {
+            net.add_node(Router.parseJSON(JSON.stringify(currRouter)));
+            console.log(Router.parseJSON(JSON.stringify(currRouter)));
+          }
+
+          for (let currMachine of parsedJSON.machines) {
+            net.add_node(Machine.parseJSON(JSON.stringify(currMachine)));
+            console.log(Machine.parseJSON(JSON.stringify(currMachine)));
+          }
+
+          net = net;
+          set_edges();
+        } catch (error) {
+          console.log(`Error: ${error}`);
+        }
+  }
 </script>
 
 <main>
