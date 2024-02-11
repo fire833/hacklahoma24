@@ -34,10 +34,12 @@
         const fileContent = e.target?.result as string;
         let parsedJSON = JSON.parse(fileContent).network;
         try {
+          net = new Network();
           for(let currSwitch of parsedJSON.switches) {
             net.add_node(Switch.parseJSON(JSON.stringify(currSwitch)));
             console.log(Switch.parseJSON(JSON.stringify(currSwitch)));
           }
+          console.log("Finish switches")
           for(let currRouter of parsedJSON.routers) {
             net.add_node(Router.parseJSON(JSON.stringify(currRouter)));
             console.log(Router.parseJSON(JSON.stringify(currRouter)));
@@ -47,6 +49,8 @@
             net.add_node(Machine.parseJSON(JSON.stringify(currMachine)));
             console.log(Machine.parseJSON(JSON.stringify(currMachine)));
           }
+
+          net = net;
         } catch (error) {
           console.log(`Error: ${error}`)
         }

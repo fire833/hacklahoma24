@@ -18,6 +18,11 @@
     placeCanvas(canvas);
     addStarterObjects(net);
   });
+
+  afterUpdate(async () => {
+    placeCanvas(canvas);
+    addStarterObjects(net);
+  })
 </script>
 
 <div class="canvas" bind:this={canvas} />

@@ -270,7 +270,7 @@ export abstract class Node {
       outPacketLog: this.outPacketLog,
       currPacketQueue: this.currPacketQueue,
       nextPacketQueue: this.nextPacketQueue,
-      arpTable: this.arpTable,
+      arpTable: [...this.arpTable],
       interfaces: this.interfaces,
       id: this.id,
       fwRules: this.fwRules,

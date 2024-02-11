@@ -88,8 +88,16 @@ export class Switch extends Node {
     returnSwitch.outPacketLog = parsedJSON.super.outPacketLog;
     returnSwitch.currPacketQueue = parsedJSON.super.currPacketQueue;
     returnSwitch.nextPacketQueue = parsedJSON.super.nextPacketQueue;
-    returnSwitch.arpTable = parsedJSON.super.arpTable;
-    returnSwitch.interfaces = parsedJSON.super.interfaces;
+    try {
+      returnSwitch.arpTable = new Map<Address4, [string, string]>(parsedJSON.super.arpTable);
+    } catch (error) {
+      returnSwitch.arpTable = new Map<Address4, [string, string]>();
+    }
+    try {
+      returnSwitch.interfaces = new Map<number, [Address4 | null, string | null, string | null, string | null]>(parsedJSON.super.interfaces);
+    } catch (error) {
+      returnSwitch.interfaces = new Map<number, [Address4 | null, string | null, string | null, string | null]>();
+    }
     returnSwitch.id = parsedJSON.super.id;
     returnSwitch.fwRules = parsedJSON.super.fwRules;
     returnSwitch.nodeX = parsedJSON.super.nodeX;
@@ -164,8 +172,16 @@ export class Router extends Node {
     returnRouter.outPacketLog = parsedJSON.super.outPacketLog;
     returnRouter.currPacketQueue = parsedJSON.super.currPacketQueue;
     returnRouter.nextPacketQueue = parsedJSON.super.nextPacketQueue;
-    returnRouter.arpTable = parsedJSON.super.arpTable;
-    returnRouter.interfaces = parsedJSON.super.interfaces;
+    try {
+      returnRouter.arpTable = new Map<Address4, [string, string]>(parsedJSON.super.arpTable);
+    } catch (error) {
+      returnRouter.arpTable = new Map<Address4, [string, string]>();
+    }
+    try {
+      returnRouter.interfaces = new Map<number, [Address4 | null, string | null, string | null, string | null]>(parsedJSON.super.interfaces);
+    } catch (error) {
+      returnRouter.interfaces = new Map<number, [Address4 | null, string | null, string | null, string | null]>();
+    }
     returnRouter.id = parsedJSON.super.id;
     returnRouter.fwRules = parsedJSON.super.fwRules;
     returnRouter.nodeX = parsedJSON.super.nodeX;
@@ -303,8 +319,16 @@ export class Machine extends Node {
     returnMachine.outPacketLog = parsedJSON.super.outPacketLog;
     returnMachine.currPacketQueue = parsedJSON.super.currPacketQueue;
     returnMachine.nextPacketQueue = parsedJSON.super.nextPacketQueue;
-    returnMachine.arpTable = parsedJSON.super.arpTable;
-    returnMachine.interfaces = parsedJSON.super.interfaces;
+    try {
+      returnMachine.arpTable = new Map<Address4, [string, string]>(parsedJSON.super.arpTable);
+    } catch (error) {
+      returnMachine.arpTable = new Map<Address4, [string, string]>();
+    }
+    try {
+      returnMachine.interfaces = new Map<number, [Address4 | null, string | null, string | null, string | null]>(parsedJSON.super.interfaces);
+    } catch (error) {
+      returnMachine.interfaces = new Map<number, [Address4 | null, string | null, string | null, string | null]>();
+    }
     returnMachine.id = parsedJSON.super.id;
     returnMachine.fwRules = parsedJSON.super.fwRules;
     returnMachine.nodeX = parsedJSON.super.nodeX;
