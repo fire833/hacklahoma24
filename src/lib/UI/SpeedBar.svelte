@@ -16,7 +16,7 @@
       min="1"
       max="100"
       bind:this={slider}
-      on:change={updateSpeed}
+      on:input={updateSpeed}
     />
     <div id="labels">
       <div>1 t/s</div>

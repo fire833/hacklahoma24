@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import Envelope from "../../assets/sprites/Envelope.png";
 import Router from "../../assets/sprites/Router.png";
-import { VisMode } from "../../stores";
+import { VisMode, visMode, speed } from "../../stores";
 import type { Network } from "../../net/net.js";
 
 export function placeCanvas(canvas: HTMLElement) {
@@ -27,26 +27,27 @@ export function placeCanvas(canvas: HTMLElement) {
 
     app.stage.position.y = window.innerHeight / 2;
     app.stage.position.x = window.innerWidth   / 2;
-    app.stage.scale.y = 3;
-    app.stage.scale.x = 3;
+    app.stage.scale.y = 2;
+    app.stage.scale.x = 2;
 
     return app;
   }
 
-export async function addStarterObjects(app: PIXI.Application<HTMLCanvasElement>, net: Network, speed: Number, visMode: VisMode) {
-
+export async function addStarterObjects(app: PIXI.Application<HTMLCanvasElement>, net: Network) {
   
     // load the texture we need
     const envelopeTexture = await PIXI.Assets.load(Envelope);
     const routerTexture = await PIXI.Assets.load(Router);
 
 
-    const text = new PIXI.HTMLText("Speed: " + speed + " visMode: " + visMode, {
+    let text = new PIXI.HTMLText("Speed: " + speed + " visMode: " + visMode, {
       fontSize: 20,
       fill: "white",
     });
-    text.x = app.renderer.width / 2;
-    text.y = app.renderer.height / 2;
+
+    speed.subscribe((value) => {
+      text.text = "Speed: " + value;
+    });
 
 
     net.get_graph()[0].forEach((v,k) => {
