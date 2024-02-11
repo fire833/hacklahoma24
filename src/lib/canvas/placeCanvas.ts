@@ -6,15 +6,12 @@ import { VisMode, visMode, speed } from "../../stores";
 import type { Network } from "../../net/net.js";
 
 export let viewport: Viewport;
+export let app: PIXI.Application<HTMLCanvasElement>;
 
-export function placeCanvas(
-  canvas: HTMLElement
-): [PIXI.Application<HTMLCanvasElement>, Viewport] {
+export function placeCanvas(canvas: HTMLElement) {
   PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;
-  // The application will create a renderer using WebGL, if possible,
-  // with a fallback to a canvas render. It will also setup the ticker
-  // and the root stage PIXI.Container
-  const app = new PIXI.Application<HTMLCanvasElement>({
+
+  app = new PIXI.Application<HTMLCanvasElement>({
     backgroundAlpha: 0,
     width: window.innerWidth,
     height: window.innerHeight,
@@ -22,25 +19,14 @@ export function placeCanvas(
     autoDensity: true,
   });
 
-  // The application will create a canvas element for you that you
-  // can then insert into the DOM
-  canvas.replaceChildren(app.view);
-
   viewport = new Viewport({
-    screenWidth: window.innerWidth,
-    screenHeight: window.innerHeight,
     worldWidth: 100,
     worldHeight: 100,
     events: app.renderer.events,
-  })
-    .drag()
-    .pinch()
-    .wheel()
-    .decelerate();
+  });
 
+  canvas.replaceChildren(app.view);
   app.stage.addChild(viewport);
-
-  app.ticker.start();
 
   app.stage.position.y = window.innerHeight / 2;
   app.stage.position.x = window.innerWidth / 2;
@@ -57,14 +43,9 @@ export function placeCanvas(
   window.addEventListener("resize", resize);
 
   resize();
-
-  return [app, viewport];
 }
 
-export async function addStarterObjects(
-  app: PIXI.Application<HTMLCanvasElement>,
-  net: Network
-) {
+export async function addStarterObjects(net: Network) {
   // load the texture we need
   const envelopeTexture = await PIXI.Assets.load(Envelope);
   const routerTexture = await PIXI.Assets.load(Router);
