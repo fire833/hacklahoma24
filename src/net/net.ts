@@ -151,6 +151,21 @@ export abstract class Node {
     if (p.app === PacketType.ARPResponse)
       this.arpTable.set(p.srcip, [p.srcmac, p.srcnode]);
   }
+
+  public toJSON() : string {
+    return JSON.stringify({
+      "inPacketLog": this.inPacketLog,
+      "outPacketLog": this.outPacketLog,
+      "currPacketQueue": this.currPacketQueue,
+      "nextPacketQueue": this.nextPacketQueue,
+      "arpTable": this.arpTable,
+      "interfaces": this.interfaces,
+      "id": this.id,
+      "fwRules": this.fwRules,
+      "nodeX": this.nodeX,
+      "nodeY": this.nodeY,
+    });
+  }
 }
 
 export class Network {

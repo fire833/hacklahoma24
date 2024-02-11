@@ -66,6 +66,14 @@ export class Switch extends Node {
 
     return arr;
   }
+
+  public override toJSON() : string {
+    return JSON.stringify({
+      "super": super.toJSON(),
+      "macToIface": this.macToIface,
+      "numPorts": this.numPorts,
+    })
+  }
 }
 
 export class Router extends Node {
@@ -182,6 +190,14 @@ export class Machine extends Node {
     }
 
     return null;
+  }
+
+  public override toJSON() : string {
+    return JSON.stringify({
+      "super": super.toJSON(),
+      "ip": this.ip,
+      "mType": this.mType,
+    })
   }
 }
 
