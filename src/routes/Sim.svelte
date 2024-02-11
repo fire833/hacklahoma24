@@ -100,43 +100,6 @@
     }
   };
 
-  export function renderTutorialJSON(): void {
-    console.log(currentTut);
-    let parsedJSON = JSON.parse(JSON.stringify(currentTut)).network;
-
-    try {
-      net = new Network();
-      for (let currSwitch of parsedJSON.switches) {
-        net.add_node(Switch.parseJSON(JSON.stringify(currSwitch)));
-        console.log(Switch.parseJSON(JSON.stringify(currSwitch)));
-      }
-      console.log("Finish switches");
-      for (let currRouter of parsedJSON.routers) {
-        net.add_node(Router.parseJSON(JSON.stringify(currRouter)));
-        console.log(Router.parseJSON(JSON.stringify(currRouter)));
-      }
-
-      for (let currMachine of parsedJSON.machines) {
-        net.add_node(Machine.parseJSON(JSON.stringify(currMachine)));
-        console.log(Machine.parseJSON(JSON.stringify(currMachine)));
-      }
-
-      let machine = [];
-
-      for (let curr of net.net.values()) {
-        machine.push(curr);
-      }
-
-      console.log(net.add_edge(machine[0].id, machine[1].id));
-      console.log(net.get_graph());
-
-      net = net;
-      console.log(net);
-    } catch (error) {
-      console.log(`Error: ${error}`);
-    }
-  }
-
   if (urlParam === "tutorial_1") {
     let parsedJSON = JSON.parse(JSON.stringify(currentTut)).network;
 
@@ -172,6 +135,39 @@
       console.log(`Error: ${error}`);
     }
   }
+
+  const renderTutorialJSON = (tutorialJSON: any) => {
+    console.log(tutorialJSON)
+    let parsedJSON = JSON.parse(JSON.stringify(tutorialJSON)).network;
+
+    try {
+      net = new Network();
+      for (let currSwitch of parsedJSON.switches) {
+        net.add_node(Switch.parseJSON(JSON.stringify(currSwitch)));
+        console.log(Switch.parseJSON(JSON.stringify(currSwitch)));
+      }
+      for (let currRouter of parsedJSON.routers) {
+        net.add_node(Router.parseJSON(JSON.stringify(currRouter)));
+        console.log(Router.parseJSON(JSON.stringify(currRouter)));
+      }
+
+      for (let currMachine of parsedJSON.machines) {
+        net.add_node(Machine.parseJSON(JSON.stringify(currMachine)));
+        console.log(Machine.parseJSON(JSON.stringify(currMachine)));
+      }
+
+      let machine = []
+
+      for(let curr of net.net.values()) {
+        machine.push(curr);
+      }
+
+      net = net;
+      console.log(net)
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    }
+  }
 </script>
 
 <main>
@@ -190,7 +186,7 @@
     </Modal>
   {/if}
   <div class="ui">
-    <UI {net} {currentTut} />
+    <UI {net} currentTut={currentTut} renderTutorialJSON={renderTutorialJSON}/>
   </div>
   <div class="canvas">
     <Canvas {net} />

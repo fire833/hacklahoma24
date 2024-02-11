@@ -2,9 +2,13 @@
   import { writable } from "svelte/store";
   import AppButtons from "./AppButtons.svelte";
   import tutorialData1 from "../../../public/tutorials/Tutorial_1.json";
-  import type { Network } from "../../net/net";
+  import tutorialData2 from "../../../public/tutorials/Tutorial_2.json";
+  import tutorialData3 from "../../../public/tutorials/Tutorial_3.json";
+  import { Network } from "../../net/net";
+  import { Machine, Router, Switch } from "../../net/subnodes";
 
-  let currentTut = tutorialData1;
+  export let currentTut : any;
+  export let renderTutorialJSON: (json: any) => void;
 
   enum SideBarModes {
     Tutorial,
@@ -26,6 +30,7 @@
 
   export let open = false;
   export let net: Network;
+  console.log(net)
   $: currNode = net.net.get(net.active_node);
 
   let nodeName = "Test Node";
@@ -41,12 +46,14 @@
     event?.preventDefault();
     counter = counter + 1;
     currentTut = eval(`tutorialData${counter}`);
+    renderTutorialJSON(currentTut)
   }
 
   function backwardClick() {
     event?.preventDefault();
     counter = counter - 1;
     currentTut = eval(`tutorialData${counter}`);
+    renderTutorialJSON(currentTut)
   }
 </script>
 
