@@ -106,12 +106,6 @@
       <h3>Please open the sidebar to follow the tutorial</h3>
     </Modal>
   {/if}
-  <div class="ui">
-    <UI {openTutModal} />
-  </div>
-  <div class="canvas">
-    <Canvas {net} />
-  </div>
 </main>
 
 <style>
