@@ -1,14 +1,10 @@
 <script lang="ts">
   import { afterUpdate, onMount } from "svelte";
-  import {
-    viewport,
-    app,
-    placeCanvas,
-    addStarterObjects,
-  } from "./canvas/placeCanvas.js";
+  import { viewport, app, placeCanvas } from "./canvas/placeCanvas.js";
   import type { Network } from "../net/net.js";
   import type { Application } from "pixi.js";
   import type { Viewport } from "pixi-viewport";
+  import { Sim } from "./canvas/sim.js";
 
   export let net: Network;
 
@@ -16,12 +12,12 @@
 
   onMount(async () => {
     placeCanvas(canvas);
-    addStarterObjects(net);
+    new Sim(net);
   });
 
   afterUpdate(async () => {
     placeCanvas(canvas);
-    addStarterObjects(net);
+    new Sim(net);
   });
 </script>
 
