@@ -13,7 +13,7 @@
   enum SideBarModes {
     Tutorial,
     Node,
-    PacketFlows,
+    // PacketFlows,
     // NodeEditing,
   }
 
@@ -95,7 +95,6 @@
 
     <h2>Interfaces</h2>
 
-    {console.log(currNode)}
     {#if currNode}
       {#each currNode.interfaces as [index, iface]}
         <div>
@@ -131,7 +130,7 @@
     {#if counter <= 3}
       <button on:click={forwardClick}>Next</button>
     {/if}
-  {:else if setting === SideBarModes.PacketFlows}
+  <!-- {:else if setting === SideBarModes.PacketFlows}
     {#if currNode}
       <h2>Node {currNode?.id} Incoming Packets Log</h2>
       {#each currNode.inPacketLog as p}
@@ -146,7 +145,7 @@
           MAC: {p.srcmac} SRCIP: {p.srcip} DSTMAC: {p.dstmac} DSTIP: {p.dstip} TYPE:
           {p.app}
         </h3>
-      {/each}
+      {/each} -->
     {/if}
   {/if}
 </div>
