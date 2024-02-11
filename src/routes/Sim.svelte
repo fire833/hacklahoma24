@@ -1,6 +1,7 @@
 <script lang="ts">
   import UI from "../lib/UI.svelte";
   import Canvas from "../lib/Canvas.svelte";
+  import Backdrop from "../lib/UI/Backdrop.svelte";
   import { Network } from "../net/net";
   import { Machine, Router, Switch } from "../net/subnodes";
   import Modal from "../lib/UI/Modal.svelte";
@@ -45,20 +46,20 @@
   let uploadedFiles: any;
 
   let set_edges = () => {
-    for(let key of net.net.keys()) {
+    for (let key of net.net.keys()) {
       let currDevice = net.net.get(key);
 
-      for(let loopDevice of net.net.values()) {
-        if(currDevice?.id !== loopDevice.id) {
+      for (let loopDevice of net.net.values()) {
+        if (currDevice?.id !== loopDevice.id) {
           try {
-            net.add_edge(currDevice?.id, loopDevice.id)
+            net.add_edge(currDevice?.id, loopDevice.id);
           } catch (error) {
-            console.log(error)
+            console.log(error);
           }
         }
       }
     }
-  }
+  };
 
   let handleFileUpload = (event: { target: { files: any } }) => {
     uploadedFiles = event.target.files;
@@ -99,6 +100,7 @@
     }
   };
 
+<<<<<<< Updated upstream
   export function renderTutorialJSON() : void {
     console.log(currentTut);
     let parsedJSON = JSON.parse(JSON.stringify(currentTut)).network;
@@ -130,12 +132,36 @@
       console.log(net.get_graph())
 
       net = net;
+=======
+  if (urlParam === "tutorial_1") {
+    let parsedJSON = JSON.parse(JSON.stringify(tutorialData1)).network;
+    try {
+      net = new Network();
+      for (let currSwitch of parsedJSON.switches) {
+        net.add_node(Switch.parseJSON(JSON.stringify(currSwitch)));
+        console.log(Switch.parseJSON(JSON.stringify(currSwitch)));
+      }
+      console.log("Finish switches");
+      for (let currRouter of parsedJSON.routers) {
+        net.add_node(Router.parseJSON(JSON.stringify(currRouter)));
+        console.log(Router.parseJSON(JSON.stringify(currRouter)));
+      }
+
+      for (let currMachine of parsedJSON.machines) {
+        net.add_node(Machine.parseJSON(JSON.stringify(currMachine)));
+        console.log(Machine.parseJSON(JSON.stringify(currMachine)));
+      }
+
+      net = net;
+      set_edges();
+>>>>>>> Stashed changes
       console.log(net);
     } catch (error) {
       console.log(`Error: ${error}`);
     }
   }
 
+<<<<<<< Updated upstream
   if(urlParam === "tutorial_1") {
     let parsedJSON = JSON.parse(JSON.stringify(currentTut)).network;
 
@@ -171,6 +197,9 @@
       console.log(`Error: ${error}`);
     }
   }
+=======
+  console.log(JSON.stringify(new Switch(16, undefined, 250, 225)));
+>>>>>>> Stashed changes
 </script>
 
 <main>
@@ -194,6 +223,7 @@
   <div class="canvas">
     <Canvas {net} />
   </div>
+  <div class="bg"><Backdrop></Backdrop></div>
 
   {#if openTutModal}
     <Modal showTutModal={openTutModal}>
@@ -216,6 +246,14 @@
   }
   .canvas {
     z-index: 10;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .bg {
+    z-index: -100;
     position: absolute;
     left: 0;
     top: 0;
