@@ -55,9 +55,9 @@ export class SimObject {
     let nodeArray = Array.from(graph[0].keys());
 
     graph[0].forEach((v, k) => {
-      let otherNode: string =
-        nodeArray[Math.floor(Math.random() * nodeArray.length)];
-      edges.push(Array(k, otherNode));
+      for(let otherNode of nodeArray) {
+        edges.push(Array(k, otherNode));
+      }
     });
 
     // Draw edges
