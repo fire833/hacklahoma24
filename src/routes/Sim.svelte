@@ -7,6 +7,9 @@
   import { Address4 } from "ip-address/dist/ipv4";
   import tutorialData1 from "../../public/tutorials/Tutorial_1.json";
   import tutorialData2 from "../../public/tutorials/Tutorial_1.json";
+  import tutorialData3 from "../../public/tutorials/Tutorial_3.json"
+
+  let currentTut = tutorialData1;
 
   const urlParam = new URLSearchParams(window.location.search).get("level");
   $: openModal = urlParam === "upload";
@@ -96,34 +99,78 @@
     }
   };
 
-  if(urlParam === "tutorial_1") {
-    let parsedJSON = JSON.parse(JSON.stringify(tutorialData1)).network;
-        try {
-          net = new Network();
-          for (let currSwitch of parsedJSON.switches) {
-            net.add_node(Switch.parseJSON(JSON.stringify(currSwitch)));
-            console.log(Switch.parseJSON(JSON.stringify(currSwitch)));
-          }
-          console.log("Finish switches");
-          for (let currRouter of parsedJSON.routers) {
-            net.add_node(Router.parseJSON(JSON.stringify(currRouter)));
-            console.log(Router.parseJSON(JSON.stringify(currRouter)));
-          }
+  export function renderTutorialJSON() : void {
+    console.log(currentTut);
+    let parsedJSON = JSON.parse(JSON.stringify(currentTut)).network;
 
-          for (let currMachine of parsedJSON.machines) {
-            net.add_node(Machine.parseJSON(JSON.stringify(currMachine)));
-            console.log(Machine.parseJSON(JSON.stringify(currMachine)));
-          }
+    try {
+      net = new Network();
+      for (let currSwitch of parsedJSON.switches) {
+        net.add_node(Switch.parseJSON(JSON.stringify(currSwitch)));
+        console.log(Switch.parseJSON(JSON.stringify(currSwitch)));
+      }
+      console.log("Finish switches");
+      for (let currRouter of parsedJSON.routers) {
+        net.add_node(Router.parseJSON(JSON.stringify(currRouter)));
+        console.log(Router.parseJSON(JSON.stringify(currRouter)));
+      }
 
-          net = net;
-          set_edges();
-          console.log(net);
-        } catch (error) {
-          console.log(`Error: ${error}`);
-        }
+      for (let currMachine of parsedJSON.machines) {
+        net.add_node(Machine.parseJSON(JSON.stringify(currMachine)));
+        console.log(Machine.parseJSON(JSON.stringify(currMachine)));
+      }
+
+      let machine = []
+
+      for(let curr of net.net.values()) {
+        machine.push(curr);
+      }
+
+      console.log(net.add_edge(machine[0].id, machine[1].id));
+      console.log(net.get_graph())
+
+      net = net;
+      console.log(net);
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    }
   }
 
-  console.log(JSON.stringify(new Switch(16, undefined, 250, 225)))
+  if(urlParam === "tutorial_1") {
+    let parsedJSON = JSON.parse(JSON.stringify(currentTut)).network;
+
+    try {
+      net = new Network();
+      for (let currSwitch of parsedJSON.switches) {
+        net.add_node(Switch.parseJSON(JSON.stringify(currSwitch)));
+        console.log(Switch.parseJSON(JSON.stringify(currSwitch)));
+      }
+      console.log("Finish switches");
+      for (let currRouter of parsedJSON.routers) {
+        net.add_node(Router.parseJSON(JSON.stringify(currRouter)));
+        console.log(Router.parseJSON(JSON.stringify(currRouter)));
+      }
+
+      for (let currMachine of parsedJSON.machines) {
+        net.add_node(Machine.parseJSON(JSON.stringify(currMachine)));
+        console.log(Machine.parseJSON(JSON.stringify(currMachine)));
+      }
+
+      let machine = []
+
+      for(let curr of net.net.values()) {
+        machine.push(curr);
+      }
+
+      console.log(net.add_edge(machine[0].id, machine[1].id));
+      console.log(net.get_graph())
+
+      net = net;
+      console.log(net);
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    }
+  }
 </script>
 
 <main>
@@ -142,7 +189,7 @@
     </Modal>
   {/if}
   <div class="ui">
-    <UI {net} />
+    <UI {net} currentTut={currentTut}/>
   </div>
   <div class="canvas">
     <Canvas {net} />

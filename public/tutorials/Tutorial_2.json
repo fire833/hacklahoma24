@@ -2,7 +2,7 @@
     "title": "Tutorial 2",
     "sections": [
       {
-        "title": "Introduction",
+        "title": "What You Just Saw",
         "steps": [
           {
             "text": "In the previous tutorial, you witnessed how hosts evolved to send packets to other hosts. This evolution in communication has undoubtedly propelled advancements in computing significantly forward."

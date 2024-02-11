@@ -1,0 +1,48 @@
+
+{
+    "title": "Tutorial 3",
+    "sections": [
+      {
+        "title": "What You Just Saw",
+        "steps": [
+          {
+            "text": "In tutorial two, you observed how hosts communicate using switches. Now, it's time for a big secret: switches are primarily used for INTRA-SUBNET communication. Now, let's delve into INTER-SUBNET communication."
+          }
+        ]
+      },
+      {
+        "title": "Subnet Surfers",
+        "steps": [
+          {
+            "text": "Intra-subnet communication is employed when communicating among a group of hosts within the same local network. For instance, all the devices communicating on the University of Oklahoma's network represent an example of intra-subnet communication."
+          },
+          {
+            "text": "Inter-subnet communication occurs when you're communicating between different subnetworks. For instance, if you're attempting to communicate with someone a couple of football fields away, simply shouting won't suffice. A more effective solution would involve a mediator to relay the information between the two distant points."
+          }
+        ]
+      },
+      {
+        "title": "Objective",
+        "steps": [
+          {
+            "text": "Now you are going to send information to the destination through the router."
+          },
+          {
+            "text": "On the \"Node\" tab you should see other options besides Ping. Don't be afraid to try those out!"
+          }
+        ]
+      }
+    ],
+    "network": {
+      "switches": [
+      ],
+      "routers": [
+        {"type":0,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-sfcqy5v3","fwRules":[],"nodeX":250,"nodeY":225}}
+      ],
+      "machines": [
+        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-wy1h6h00","fwRules":[],"nodeX":250,"nodeY":75},"ip":{"groups":4,"parsedAddress":["127","0","0","0"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.0","addressMinusSuffix":"127.0.0.0"},"mType":0},
+        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-pd33mcfl","fwRules":[],"nodeX":250,"nodeY":375},"ip":{"groups":4,"parsedAddress":["127","0","0","1"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.1","addressMinusSuffix":"127.0.0.1"},"mType":0}
+      ]
+    }
+  }
+  
