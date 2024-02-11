@@ -5,32 +5,54 @@
         "title": "Introduction",
         "steps": [
           {
-            "text": "Welcome to the first tutorial! In this tutorial you will learn about the basics of the internet."
+            "text": "In the previous tutorial, you witnessed how hosts evolved to send packets to other hosts. This evolution in communication has undoubtedly propelled advancements in computing significantly forward."
           }
         ]
       },
       {
-        "title": "Setting Up",
+        "title": "Switch It Up Now Y'all!",
         "steps": [
           {
-            "text": "To get started, make sure you have Node.js and npm installed on your machine."
+            "text": "Imagine attempting to communicate with your friends without the means to propagate information. If you needed to speak with someone who had just left for another state, your only option would be to physically chase after them and deliver the message in person."
           },
           {
-            "text": "Run the following command to create a new Svelte project: `npx degit sveltejs/template svelte-tutorial`."
+            "text": "Storing all possible communication routes would impose a significant burden on a computer's memory. In such cases, utilizing a \"Switch\" becomes a more efficient solution."
           }
         ]
       },
       {
-        "title": "Creating Components",
+        "title": "Whoa, What?",
         "steps": [
           {
-            "text": "In Svelte, components are the building blocks of your application. Create a new component by adding a .svelte file."
+            "text": "That may have been overwhelming with information. The key takeaway is that switches enable communication to occur without the need to go directly to the destination."
           },
           {
-            "text": "Add your component's markup, script, and styles within the .svelte file."
+            "text": "In the scenario mentioned earlier, if you can't directly communicate with the person you need to reach, you might convey your message to someone who will eventually meet them in person and pass along the information on your behalf."
+          }
+        ]
+      },
+      {
+        "title": "Objective",
+        "steps": [
+          {
+            "text": "Once again, you're going to simulate a ping to establish connectivity from the source host to the destination host."
+          },
+          {
+            "text": "This time, you're going to route your packet through a switch to ensure that the information reaches its destination."
           }
         ]
       }
-    ]
+    ],
+    "network": {
+      "switches": [
+        {"type":3,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-vpmnziya","fwRules":[],"nodeX":250,"nodeY":225}}
+      ],
+      "routers": [
+      ],
+      "machines": [
+        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-wy1h6h00","fwRules":[],"nodeX":250,"nodeY":75},"ip":{"groups":4,"parsedAddress":["127","0","0","0"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.0","addressMinusSuffix":"127.0.0.0"},"mType":0},
+        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-pd33mcfl","fwRules":[],"nodeX":250,"nodeY":375},"ip":{"groups":4,"parsedAddress":["127","0","0","1"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.1","addressMinusSuffix":"127.0.0.1"},"mType":0}
+      ]
+    }
   }
   

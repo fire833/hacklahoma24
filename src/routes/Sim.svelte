@@ -6,6 +6,7 @@
   import Modal from "../lib/UI/Modal.svelte";
   import { Address4 } from "ip-address/dist/ipv4";
   import tutorialData1 from "../lib/UI/Tutorial_1.json";
+  import tutorialData2 from "../lib/UI/Tutorial_1.json";
 
   const urlParam = new URLSearchParams(window.location.search).get("level");
   $: openModal = urlParam === "upload";
@@ -116,10 +117,13 @@
 
           net = net;
           set_edges();
+          console.log(net);
         } catch (error) {
           console.log(`Error: ${error}`);
         }
   }
+
+  console.log(JSON.stringify(new Switch(16, undefined, 250, 225)))
 </script>
 
 <main>
