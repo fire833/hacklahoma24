@@ -5,7 +5,10 @@
 
 <main>Welcome to Internet of Pings</main>
 
-<Link to="/sim">Start</Link>
+<Link to="/sim?level=tutorial_1">Start</Link>
+<Link to="/sim?level=local">Use Local Storage</Link>
+<Link to="/sim?level=upload">Upload File</Link>
+
 
 <style>
   main {
