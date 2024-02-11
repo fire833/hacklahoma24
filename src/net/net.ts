@@ -282,7 +282,7 @@ export class Network {
   public get_graph(): [Map<string, Node>, Array<[string, string]>] {
     let arr = Array();
     for (let node of this.net) {
-      arr = [...arr, node[1].get_edges()];
+      arr = [...arr, ...node[1].get_edges()];
     }
 
     return [this.net, arr];
