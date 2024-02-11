@@ -10,11 +10,6 @@
 
   let canvas: HTMLElement;
 
-  onMount(async () => {
-    placeCanvas(canvas);
-    new SimObject(net);
-  });
-
   afterUpdate(async () => {
     placeCanvas(canvas);
     new SimObject(net);

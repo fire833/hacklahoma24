@@ -11,11 +11,11 @@
   $: openTutModal = urlParam === "tutorial_1";
 
   let net = new Network();
-  let a = new Switch(16, undefined, 20, 20);
-  let b = new Switch(16, undefined, -20, -40);
-  let c = new Switch(16, undefined, 20, 60);
-  let d = new Switch(16, undefined, -20, -80);
-  let e = new Switch(16, undefined, 40, 20);
+  let a = new Switch(16, undefined, 100, -100);
+  let b = new Switch(16, undefined, -200, -40);
+  let c = new Switch(16, undefined, 200, 60);
+  let d = new Switch(16, undefined, -100, -80);
+  let e = new Switch(16, undefined, -40, 40);
   let m = new Machine(
     2,
     new Address4("10.0.3.4/24"),
@@ -36,8 +36,6 @@
   net.add_edge(m.id, b.id);
   net.add_edge(a.id, d.id);
   net.add_edge(a.id, e.id);
-
-  // Fake the edges
 
   let uploadedFiles: any;
 
