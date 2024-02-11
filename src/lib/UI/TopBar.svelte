@@ -2,8 +2,15 @@
   import type { Network } from "../../net/net.js";
   import { Machine, Router, Switch } from "../../net/subnodes.js";
   import { VisMode, visMode } from "../../stores.js";
+  import { writable } from 'svelte/store'
+  import Modal from "./Modal.svelte";
 
   let setting: VisMode;
+
+  let showModal1 = false;
+  let showModal2 = false;
+  let showModal3 = false;
+  let showModal4 = false;
 
   visMode.subscribe((value) => {
     setting = value;
@@ -11,6 +18,22 @@
 
   function updateMode(mode: VisMode) {
     visMode.update(() => mode);
+    
+    }
+
+  function popModal(mode) {
+    if(mode === "PHYS") {
+      showModal1 = true;
+    }
+    if(mode === "LINK") {
+      showModal2 = true;
+    }
+    if(mode === "IP") {
+      showModal3 = true;
+    }
+    if(mode === "APP") {
+      showModal4 = true;
+    }
   }
 
   // Function to export the network object to JSON
@@ -60,7 +83,7 @@
   <p>Layer:</p>
   <div class="button-group">
     {#each Object.values(VisMode).filter((value) => typeof value == "string") as mode}
-      <button class:sunset={setting === mode} on:click={() => updateMode(mode)}>
+      <button class:sunset={setting === mode} on:click={() => { updateMode(mode); popModal(mode) }}>
         {mode}
       </button>
     {/each}
@@ -69,6 +92,30 @@
   <button on:click={() => (open = !open)}> Sidebar Toggle </button>
   <button on:click={exportNetworkToJson}> Export Network </button>
 </div>
+
+{#if showModal1}
+    <Modal showModal={showModal1}>
+      <h2>Please upload your network JSON object</h2>
+    </Modal>
+  {/if}
+
+  {#if showModal2}
+  <Modal showModal={showModal2}>
+    <h2>Please upload your network JSON object</h2>
+  </Modal>
+{/if}
+
+{#if showModal3}
+    <Modal showModal={showModal3}>
+      <h2>Please upload your network JSON object</h2>
+    </Modal>
+  {/if}
+
+  {#if showModal4}
+    <Modal showModal={showModal4}>
+      <h2>Please upload your network JSON object</h2>
+    </Modal>
+  {/if}
 
 <style>
   #bg {
