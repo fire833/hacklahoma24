@@ -1,11 +1,8 @@
 <script lang="ts">
   import { writable } from "svelte/store";
   import AppButtons from "./AppButtons.svelte";
-  import tutorialData1 from "../../../public/tutorials/Tutorial_1.json";
-  import tutorialData2 from "../../../public/tutorials/Tutorial_2.json";
-  import tutorialData3 from "../../../public/tutorials/Tutorial_3.json";
-  import { Network } from "../../net/net";
-  import { Machine, Router, Switch } from "../../net/subnodes";
+  import tutorialData1 from "../../../public/Tutorials/Tutorial_1.json";
+  import type { Network } from "../../net/net";
 
   export let currentTut : any;
   export let renderTutorialJSON: (json: any) => void;

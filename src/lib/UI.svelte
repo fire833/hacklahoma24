@@ -3,9 +3,9 @@
   import TopBar from "./UI/TopBar.svelte";
   import SpeedBar from "./UI/SpeedBar.svelte";
   import type { Network } from "../net/net";
-  import tutorialData1 from "../../public/tutorials/Tutorial_1.json";
-  import tutorialData2 from "../../public/tutorials/Tutorial_2.json";
-  import tutorialData3 from "../../public/tutorials/Tutorial_3.json";
+  import tutorialData1 from "../../public/Tutorials/Tutorial_1.json";
+  import tutorialData2 from "../../public/Tutorials/Tutorial_2.json";
+  import tutorialData3 from "../../public/Tutorials/Tutorial_3.json";
   import { onMount } from "svelte";
 
   let open = false;
