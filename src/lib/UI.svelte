@@ -1,14 +1,16 @@
-<script>
+<script lang="ts">
   import SideBar from "./UI/SideBar.svelte";
   import TopBar from "./UI/TopBar.svelte";
   import SpeedBar from "./UI/SpeedBar.svelte";
+  import type { Network } from "../net/net";
 
   let open = false;
+  export let net : Network
 </script>
 
 <div id="ui">
   <div class="topbar">
-    <TopBar bind:open></TopBar>
+    <TopBar net={net} bind:open></TopBar>
   </div>
 
   <div class="sidebar">
