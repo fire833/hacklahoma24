@@ -176,24 +176,6 @@
     align-items: center;
     justify-content: center;
     gap: 20px;
-  }
-
-  .button-group {
-    display: flex;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .button-group button {
-    display: flex;
-    border-radius: 0;
-  }
-
-  .button-group button:last-child {
-    border-radius: 0 8px 8px 0;
-  }
-
-  .button-group button:first-child {
-    border-radius: 8px 0 0 8px;
+    border-radius: 0 0 8px 8px;
   }
 </style>

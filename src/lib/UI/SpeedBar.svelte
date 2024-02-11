@@ -29,8 +29,8 @@
   #bg {
     display: flex;
     flex-direction: row;
-
-    padding: 15.5px;
+    border-radius: 0 0 0 8px;
+    padding: 12px 20px;
     margin: 0 auto;
     background-color: var(--color-bg);
 
