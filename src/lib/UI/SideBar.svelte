@@ -62,14 +62,16 @@
 </script>
 
 <div id="bg" class={open ? "open" : "close"}>
-  {#each Object.values(SideBarModes).filter((value) => typeof value == "string") as mode}
-    <button
-      class:sunset={setting === SideBarModes[mode]}
-      on:click={() => updateButton(SideBarModes[mode])}
-    >
-      {mode}
-    </button>
-  {/each}
+  <div class="button-group">
+    {#each Object.values(SideBarModes).filter((value) => typeof value == "string") as mode}
+      <button
+        class:sunset={setting === SideBarModes[mode]}
+        on:click={() => updateButton(SideBarModes[mode])}
+      >
+        {mode}
+      </button>
+    {/each}
+  </div>
 
   {#if setting === SideBarModes.Node}
     <h1>{nodeName}</h1>
@@ -145,7 +147,7 @@
 
 <style>
   .close {
-    transform: translate(-30vw, 0);
+    transform: translate(-25vw, 0);
   }
 
   .open {
@@ -157,8 +159,10 @@
 
   .toggle {
     z-index: 20;
-    border-radius: 0 8px 8px 0;
+    border-radius: 0 8px 0 0;
     transition: transform 0.3s ease;
+    border-bottom: 0;
+    border-left: 0;
   }
 
   #bg {

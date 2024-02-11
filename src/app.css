@@ -93,3 +93,22 @@ button:focus-visible {
   background: linear-gradient(0deg, rgba(146,12,24,1) 0%, rgba(254,28,3,1) 40%, rgba(251,112,14,1) 69%, rgba(247,196,24,1) 100%); 
   border-color:  rgb(146,12,24); 
 }
+
+.button-group {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.button-group button {
+  display: flex;
+  border-radius: 0;
+}
+
+.button-group button:last-child {
+  border-radius: 0 8px 8px 0;
+}
+
+.button-group button:first-child {
+  border-radius: 8px 0 0 8px;
+}
