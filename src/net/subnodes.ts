@@ -6,16 +6,11 @@ import {
   NoPortError,
   NoSwitchportError,
 } from "./errors";
-import { Network, Node, Packet, PacketType } from "./net";
-
-enum NodeType {
-  Router,
-  Machine,
-  InternetGateway,
-  Switch,
-}
+import { Network, Node, NodeType, Packet, PacketType } from "./net";
 
 export class Switch extends Node {
+  public nodeType: NodeType = NodeType.Switch;
+
   constructor(ports: number, id?: string, x?: number, y?: number) {
     super(ports, id, x, y);
   }
@@ -89,14 +84,22 @@ export class Switch extends Node {
     returnSwitch.currPacketQueue = parsedJSON.super.currPacketQueue;
     returnSwitch.nextPacketQueue = parsedJSON.super.nextPacketQueue;
     try {
-      returnSwitch.arpTable = new Map<Address4, [string, string]>(parsedJSON.super.arpTable);
+      returnSwitch.arpTable = new Map<Address4, [string, string]>(
+        parsedJSON.super.arpTable
+      );
     } catch (error) {
       returnSwitch.arpTable = new Map<Address4, [string, string]>();
     }
     try {
-      returnSwitch.interfaces = new Map<number, [Address4 | null, string | null, string | null, string | null]>(parsedJSON.super.interfaces);
+      returnSwitch.interfaces = new Map<
+        number,
+        [Address4 | null, string | null, string | null, string | null]
+      >(parsedJSON.super.interfaces);
     } catch (error) {
-      returnSwitch.interfaces = new Map<number, [Address4 | null, string | null, string | null, string | null]>();
+      returnSwitch.interfaces = new Map<
+        number,
+        [Address4 | null, string | null, string | null, string | null]
+      >();
     }
     returnSwitch.id = parsedJSON.super.id;
     returnSwitch.fwRules = parsedJSON.super.fwRules;
@@ -128,6 +131,8 @@ export class Switch extends Node {
 }
 
 export class Router extends Node {
+  public nodeType: NodeType = NodeType.Router;
+
   constructor(ports: number, id?: string, x?: number, y?: number) {
     super(ports, id, x, y);
   }
@@ -173,14 +178,22 @@ export class Router extends Node {
     returnRouter.currPacketQueue = parsedJSON.super.currPacketQueue;
     returnRouter.nextPacketQueue = parsedJSON.super.nextPacketQueue;
     try {
-      returnRouter.arpTable = new Map<Address4, [string, string]>(parsedJSON.super.arpTable);
+      returnRouter.arpTable = new Map<Address4, [string, string]>(
+        parsedJSON.super.arpTable
+      );
     } catch (error) {
       returnRouter.arpTable = new Map<Address4, [string, string]>();
     }
     try {
-      returnRouter.interfaces = new Map<number, [Address4 | null, string | null, string | null, string | null]>(parsedJSON.super.interfaces);
+      returnRouter.interfaces = new Map<
+        number,
+        [Address4 | null, string | null, string | null, string | null]
+      >(parsedJSON.super.interfaces);
     } catch (error) {
-      returnRouter.interfaces = new Map<number, [Address4 | null, string | null, string | null, string | null]>();
+      returnRouter.interfaces = new Map<
+        number,
+        [Address4 | null, string | null, string | null, string | null]
+      >();
     }
     returnRouter.id = parsedJSON.super.id;
     returnRouter.fwRules = parsedJSON.super.fwRules;
@@ -210,6 +223,8 @@ function randomMachineType(): MachineType {
 }
 
 export class Machine extends Node {
+  public nodeType: NodeType = NodeType.Machine;
+
   public ip: Address4;
   public mType: MachineType = randomMachineType();
 
@@ -230,6 +245,10 @@ export class Machine extends Node {
 
   public setIP(ip: Address4): void {
     this.ip = ip;
+  }
+
+  public send_ssh(ip: Address4) {
+    // let p = new Packet();
   }
 
   public handle(p: Packet, net: Network): Array<NetworkError> | null {
@@ -320,14 +339,22 @@ export class Machine extends Node {
     returnMachine.currPacketQueue = parsedJSON.super.currPacketQueue;
     returnMachine.nextPacketQueue = parsedJSON.super.nextPacketQueue;
     try {
-      returnMachine.arpTable = new Map<Address4, [string, string]>(parsedJSON.super.arpTable);
+      returnMachine.arpTable = new Map<Address4, [string, string]>(
+        parsedJSON.super.arpTable
+      );
     } catch (error) {
       returnMachine.arpTable = new Map<Address4, [string, string]>();
     }
     try {
-      returnMachine.interfaces = new Map<number, [Address4 | null, string | null, string | null, string | null]>(parsedJSON.super.interfaces);
+      returnMachine.interfaces = new Map<
+        number,
+        [Address4 | null, string | null, string | null, string | null]
+      >(parsedJSON.super.interfaces);
     } catch (error) {
-      returnMachine.interfaces = new Map<number, [Address4 | null, string | null, string | null, string | null]>();
+      returnMachine.interfaces = new Map<
+        number,
+        [Address4 | null, string | null, string | null, string | null]
+      >();
     }
     returnMachine.id = parsedJSON.super.id;
     returnMachine.fwRules = parsedJSON.super.fwRules;
@@ -341,6 +368,8 @@ export class Machine extends Node {
 }
 
 export class InternetGateway extends Node {
+  public nodeType: NodeType = NodeType.InternetGateway;
+
   constructor(id?: string, x?: number, y?: number) {
     super(1, id, x, y);
   }

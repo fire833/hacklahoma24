@@ -8,8 +8,17 @@ import {
 } from "./errors";
 import { makeRandomMAC, makeString } from "./random";
 
+export enum NodeType {
+  Router,
+  Machine,
+  InternetGateway,
+  Switch,
+}
+
 // Generic node type that is used for all subtypes.
 export abstract class Node {
+  public abstract nodeType: NodeType;
+
   // logs of packets
   public inPacketLog: Array<Packet> = new Array<Packet>();
   public outPacketLog: Array<Packet> = new Array<Packet>();
