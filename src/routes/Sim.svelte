@@ -8,6 +8,7 @@
 
   const urlParam = new URLSearchParams(window.location.search).get("level");
   $: openModal = urlParam === "upload"
+  $: openTutModal = urlParam === "tutorial_1"
 
   let net = new Network();
   net.add_node(new Switch(16, undefined, 20, 20));
@@ -62,6 +63,18 @@
   <div class="canvas">
     <Canvas {net} />
   </div>
+
+{#if openTutModal} 
+  <Modal showTutModal={openTutModal}>
+    <h2>Welcome to the tutorial!</h2>
+    <h3>Please open the sidebar to follow the tutorial</h3>
+  </Modal>
+  {/if}
+  <div class="ui">
+    <UI openTutModal={openTutModal}/>
+  </div>
+  <div class="canvas">
+    <Canvas {net} />
 </main>
 
 <style>
