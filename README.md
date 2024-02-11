@@ -1,47 +1,29 @@
-# Svelte + TS + Vite
+# Internet of Pings
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+## Inspiration
 
-## Recommended IDE Setup
+One of our members actually began his computing journey with networking in high school. Since Cisco is fairly large in the enterprise routing/switching game, they provide a closed-source network simulator specifically for Cisco products. Having used this application and not enjoying the closed nature of the software (including the internal vendor lock-in), we thought it would be fun to implement our own simulator to simulate as much of the TCP/IP stack with vendor agnostic (soft)hardware.
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+## What it does
 
-## Need an official Svelte framework?
+Internet of Pings acts as a virtual networking playground, where you can add network objects, configure them, and then simulate sent traffic between them, all from the comfort of your browser. No proprietary software to install!
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+## How we built it
 
-## Technical considerations
+We wrote the app using Svelte as the framework, with vite as our build tool. The underlying network engine was written in pure typescript to compile directly into our bundle, and the rendering of network nodes and edges was done using PIXI, a WebGL wrapper library.
 
-**Why use this over SvelteKit?**
+## Challenges we ran into
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+There were many struggles that we faced over the course of this project. The implementation of the networking engine was more complicated than initially expected, even after reducing our initial feature set. PIXI was particularly challenging to get working, as well struggles to register event handlers that integrated correctly with the existing network state to mirror it correctly, and add reactivity to the rest of the workspace.
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+## Accomplishments that we're proud of
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+We are really proud of the end product, even though it isn't complete. It was built with a lot of love, blood, sweat, and tears from the whole team.
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+## What we learned
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+Our biggest takeaway is that implementing TCP/IP from scratch is hard, and visualizing it in a way that makes sense for end users is even harder. There were many visualizations and statistics that we were interested in doing, but simply lacked the time required to execute those features faithfully. In a more pragmatic sense, we learned quite a bit about L2/L3 of the OSI model. We thought we had a decent understanding of how a router/switch would implement its routing/forwarding algorithms, but were proven wrong. Along with that, a few of our members had never used Svelte before, so that was a wonderful experience to learn a new web framework.
 
-**Why include `.vscode/extensions.json`?**
+## What's next for Internet of Pings
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
+The biggest next step is to flesh out all the issues we have with rendering the network graph to the end user, and all the callbacks needed to integrate that with our existing state. We have more visualizations that we hope to add, including a speed bar for adjusting packet flow. We also hope for better packet logging in the sidebar, as well as adding packet visualizations on the PIXI graph itself.
