@@ -139,36 +139,41 @@
   }
 
   const renderTutorialJSON = (tutorialJSON: any) => {
-    console.log(tutorialJSON)
-    let parsedJSON = JSON.parse(JSON.stringify(tutorialJSON)).network;
-
     try {
-      net = new Network();
-      for (let currSwitch of parsedJSON.switches) {
-        net.add_node(Switch.parseJSON(JSON.stringify(currSwitch)));
-        console.log(Switch.parseJSON(JSON.stringify(currSwitch)));
-      }
-      for (let currRouter of parsedJSON.routers) {
-        net.add_node(Router.parseJSON(JSON.stringify(currRouter)));
-        console.log(Router.parseJSON(JSON.stringify(currRouter)));
-      }
+      console.log(tutorialJSON)
+      let parsedJSON = JSON.parse(JSON.stringify(tutorialJSON)).network;
 
-      for (let currMachine of parsedJSON.machines) {
-        net.add_node(Machine.parseJSON(JSON.stringify(currMachine)));
-        console.log(Machine.parseJSON(JSON.stringify(currMachine)));
+      try {
+        net = new Network();
+        for (let currSwitch of parsedJSON.switches) {
+          net.add_node(Switch.parseJSON(JSON.stringify(currSwitch)));
+          console.log(Switch.parseJSON(JSON.stringify(currSwitch)));
+        }
+        for (let currRouter of parsedJSON.routers) {
+          net.add_node(Router.parseJSON(JSON.stringify(currRouter)));
+          console.log(Router.parseJSON(JSON.stringify(currRouter)));
+        }
+
+        for (let currMachine of parsedJSON.machines) {
+          net.add_node(Machine.parseJSON(JSON.stringify(currMachine)));
+          console.log(Machine.parseJSON(JSON.stringify(currMachine)));
+        }
+
+        let machine = []
+
+        for(let curr of net.net.values()) {
+          machine.push(curr);
+        }
+
+        net = net;
+        console.log(net)
+      } catch (error) {
+        console.log(`Error: ${error}`);
       }
-
-      let machine = []
-
-      for(let curr of net.net.values()) {
-        machine.push(curr);
-      }
-
-      net = net;
-      console.log(net)
     } catch (error) {
-      console.log(`Error: ${error}`);
+      console.log("Broken in Sim.svelte")
     }
+
   }
 </script>
 
