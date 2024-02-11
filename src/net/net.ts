@@ -30,16 +30,10 @@ export abstract class Node {
   public arpWaitMap: Map<Address4, Packet> = new Map<Address4, Packet>();
 
   // Mapping of IP addresses to the MAC address, and the node edge to forward along.
-  public arpTable: Map<Address4, [string, string]> = new Map<
-    Address4,
-    [string, string]
-  >();
+  public arpTable: Map<Address4, ArpEntry> = new Map<Address4, ArpEntry>();
 
   // Mapping of all interfaces indices with the appropriate IP/MAC/Node/Othermac (the MAC address on the other side of the physical connection, only used for switches).
-  public interfaces: Map<
-    number,
-    [Address4 | null, string | null, string | null, string | null]
-  >;
+  public interfaces: Map<number, Interface>;
 
   // assign a random node id to each node we create.
   public id: string = "node-" + makeString(8);
@@ -58,12 +52,9 @@ export abstract class Node {
     this.nodeY = y ?? 0;
 
     // create all of our interfaces. [IP, MAC].
-    this.interfaces = new Map<
-      number,
-      [Address4 | null, string, string | null, string | null]
-    >();
+    this.interfaces = new Map<number, Interface>();
     for (let i = 0; i < numPorts; i++) {
-      this.interfaces.set(i, [null, makeRandomMAC(), null, null]);
+      this.interfaces.set(i, new Interface(this));
     }
   }
 
@@ -94,13 +85,8 @@ export abstract class Node {
   }
 
   // Returns the found MAC address/node to forward along, otherwise cache miss.
-  public findAddrCached(ip: Address4): [string, string] | null {
-    let found = this.arpTable.get(ip);
-    if (found) {
-      return [found[0], found[1]];
-    } else {
-      return null;
-    }
+  public findAddrCached(ip: Address4): ArpEntry | undefined {
+    return this.arpTable.get(ip);
   }
 
   // For callers who need to forward packets to this node, add to the next tick queue.
@@ -115,8 +101,8 @@ export abstract class Node {
 
   public get_edges(): Array<[string, string]> {
     let arr = Array();
-    for (let iface of this.arpTable) {
-      arr.push([this.id, iface[1][1]]);
+    for (let iface of this.interfaces) {
+      arr.push([iface[1].srcnode, iface[1].dstnode]);
     }
 
     return arr;
@@ -129,8 +115,8 @@ export abstract class Node {
       let curr = this.interfaces.get(lindex);
       let outside = other.interfaces.get(rindex);
       if (curr && outside) {
-        this.interfaces.set(lindex, [curr[0], curr[1], other.id, curr[3]]);
-        this.interfaces.set(rindex, [outside[0], outside[1], this.id, curr[3]]);
+        this.interfaces.set(lindex, new Interface(this, curr.ip, other));
+        other.interfaces.set(rindex, new Interface(other, outside.ip, this));
       } else {
         return NoPortError;
       }
@@ -153,20 +139,18 @@ export abstract class Node {
   // in which case needs to go to the default gateway.
   public isAddressRemote(addr: Address4): boolean {
     for (let iface of this.interfaces) {
-      if (iface[1][0]) {
-        if (addr.isInSubnet(iface[1][0])) {
-          return true;
-        }
+      if (iface[1].ip && addr.isInSubnet(iface[1].ip)) {
+        return true;
       }
     }
 
     return false;
   }
 
+  // Get the next free NIC without an IP assigned.
   public get_free_nic(): number | null {
     // If we have an empty slot, then fill it with the other node.
-    for (let iface of this.interfaces)
-      if (!iface[1][0] && !iface[1][2]) return iface[0];
+    for (let iface of this.interfaces) if (!iface[1].ip) return iface[0];
 
     return null;
   }
@@ -174,15 +158,15 @@ export abstract class Node {
   public resolveArpRequest(p: Packet, net: Network) {
     for (let iface of this.interfaces) {
       // If someone is looking for us, then return our MAC address.
-      if (iface[1][0] && iface[1][1] && iface[1][0] === p.dstip) {
+      if (iface[1].ip === p.dstip) {
         let n = net.net.get(p.srcnode);
         if (n) {
           let outP = new Packet(
             this.id,
-            iface[1][1],
             p.dstmac,
+            p.srcmac,
+            iface[1].ip,
             p.dstip,
-            p.srcip,
             p.payload,
             PacketType.ARPResponse
           );
@@ -195,43 +179,38 @@ export abstract class Node {
     }
   }
 
+  // Take a packet from the current node and decide where to move it next.
+  // Place it in the next packet queue of the neighbor associated with the interface,
+  // otherwise hold the packet for ARP resolution.
   public route(p: Packet, net: Network) {
-    for (let route of this.interfaces) {
+    for (let iface of this.interfaces) {
       // if we find an interface with the same subnet, we need to forward to that network.
-      if (route[1][0] && p.dstip.isInSubnet(route[1][0])) {
-        let n = this.arpTable.get(p.dstip); // If we don't have a
+      if (iface[1].ip && p.dstip.isInSubnet(iface[1].ip)) {
+        let n = this.arpTable.get(p.dstip);
+        // If we don't have an ARP entry for this destination IP, we need to block and run ARP instead.
+        // If we do have an entry, then just go ahead and forward the packet along.
         if (n) {
-          let found = this.findAddrCached(p.dstip);
-          if (found && route[1][2]) {
-            p.srcmac = n[0];
-
-            let forward_node = net.net.get(n[1]);
-            if (forward_node) {
-              forward_node.appendPacket(p);
-            }
+          // We need to mangle the packet
+          p.srcmac = n.dstmac;
+          p.dstmac = n.dstmac;
+          let forward_node = net.net.get(n.dstnode);
+          if (forward_node) {
+            forward_node.appendPacket(p);
             this.handleOut(p);
-            return null;
+            return;
           }
         } else {
-          // Need to run ARP.
-          for (let iface of this.interfaces) {
-            if (
-              iface[1][0] &&
-              iface[1][1] &&
-              iface[1][2] &&
-              p.dstip.isInSubnet(iface[1][0])
-            ) {
-              this.sendArpRequest(
-                iface[1][0],
-                iface[1][1],
-                iface[1][2],
-                p.dstip,
-                net
-              );
-              this.arpWaitMap.set(p.dstip, p);
-              return null;
-            }
-          }
+          if (iface[1].dstnode)
+            // Need to run ARP.
+            this.sendArpRequest(
+              iface[1].ip,
+              iface[1].mac,
+              iface[1].dstnode,
+              p.dstip,
+              net
+            );
+          this.arpWaitMap.set(p.dstip, p);
+          return;
         }
       }
     }
@@ -240,7 +219,7 @@ export abstract class Node {
   // If we get an ARP response, add to our ARP table.
   public resolveArpResponse(p: Packet, net: Network) {
     if (p.app === PacketType.ARPResponse)
-      this.arpTable.set(p.srcip, [p.srcmac, p.srcnode]);
+      this.arpTable.set(p.srcip, new ArpEntry(p.srcip, p.srcmac, p.srcnode));
 
     // If we just resolved an IP that we were waiting for in our
     // arp wait cache, then we can send the packet off directly.
@@ -378,4 +357,40 @@ export enum PacketType {
   VideoStream,
   ARPRequest,
   ARPResponse,
+}
+
+export class Interface {
+  id: string = "iface-" + makeString(8);
+
+  ip?: Address4;
+  mac: string;
+
+  srcnode: string;
+  dstnode?: string;
+
+  // The destination MAC address of an interface. This is only to be used internally by
+  // the Switch node type, since it needs to store which destination MACs are on which NICs.
+  dstmac?: string;
+
+  // arpEntries: Map<Address4, ArpEntry> = new Map<Address4, ArpEntry>();
+
+  constructor(node: Node, ip?: Address4, neighbor?: Node, dstmac?: string) {
+    this.ip = ip;
+    this.mac = makeRandomMAC();
+    this.srcnode = node.id;
+    this.dstnode = neighbor?.id;
+    this.dstmac = dstmac;
+  }
+}
+
+export class ArpEntry {
+  dstip: Address4;
+  dstmac: string;
+  dstnode: string;
+
+  constructor(ip: Address4, mac: string, node: string) {
+    this.dstip = ip;
+    this.dstmac = mac;
+    this.dstnode = node;
+  }
 }

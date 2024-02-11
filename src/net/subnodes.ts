@@ -6,7 +6,15 @@ import {
   NoPortError,
   NoSwitchportError,
 } from "./errors";
-import { Network, Node, NodeType, Packet, PacketType } from "./net";
+import {
+  ArpEntry,
+  Interface,
+  Network,
+  Node,
+  NodeType,
+  Packet,
+  PacketType,
+} from "./net";
 
 export class Switch extends Node {
   public nodeType: NodeType = NodeType.Switch;
@@ -24,10 +32,13 @@ export class Switch extends Node {
       return arr;
     }
 
+    // If we are given the broadcast MAC address, then we flood all ports with the packet,
+    // otherwise we check in our interfaces table for the correct output interface and
+    // forward the packet along to the destination node of that interface.
     if (p.dstmac === broadcastmac) {
-      for (let neigh of this.interfaces)
-        if (neigh[1][2]) {
-          let node = net.net.get(neigh[1][2]);
+      for (let iface of this.interfaces)
+        if (iface[1].dstnode) {
+          let node = net.net.get(iface[1].dstnode);
           if (node) {
             p.srcnode = super.id;
             node.appendPacket(p);
@@ -38,9 +49,9 @@ export class Switch extends Node {
         }
       return null;
     } else if (this.getInterfaceToForward(p.dstmac)) {
-      let dstnode = this.getInterfaceToForward(p.dstmac);
-      if (dstnode) {
-        let n = net.net.get(dstnode);
+      let dstiface = this.getInterfaceToForward(p.dstmac);
+      if (dstiface?.dstnode) {
+        let n = net.net.get(dstiface.dstnode);
         if (n) {
           p.srcnode = super.id;
           n.appendPacket(p);
@@ -60,9 +71,9 @@ export class Switch extends Node {
     }
   }
 
-  private getInterfaceToForward(dstmac: string): string | null {
+  private getInterfaceToForward(dstmac: string): Interface | null {
     for (let iface of super.interfaces) {
-      if (iface[1][3] === dstmac) return iface[1][2];
+      if (iface[1].dstmac === dstmac) return iface[1];
     }
 
     return null;
@@ -84,22 +95,18 @@ export class Switch extends Node {
     returnSwitch.currPacketQueue = parsedJSON.super.currPacketQueue;
     returnSwitch.nextPacketQueue = parsedJSON.super.nextPacketQueue;
     try {
-      returnSwitch.arpTable = new Map<Address4, [string, string]>(
+      returnSwitch.arpTable = new Map<Address4, ArpEntry>(
         parsedJSON.super.arpTable
       );
     } catch (error) {
-      returnSwitch.arpTable = new Map<Address4, [string, string]>();
+      returnSwitch.arpTable = new Map<Address4, ArpEntry>();
     }
     try {
-      returnSwitch.interfaces = new Map<
-        number,
-        [Address4 | null, string | null, string | null, string | null]
-      >(parsedJSON.super.interfaces);
+      returnSwitch.interfaces = new Map<number, Interface>(
+        parsedJSON.super.interfaces
+      );
     } catch (error) {
-      returnSwitch.interfaces = new Map<
-        number,
-        [Address4 | null, string | null, string | null, string | null]
-      >();
+      returnSwitch.interfaces = new Map<number, Interface>();
     }
     returnSwitch.id = parsedJSON.super.id;
     returnSwitch.fwRules = parsedJSON.super.fwRules;
@@ -117,9 +124,12 @@ export class Switch extends Node {
       let curr = this.interfaces.get(lindex);
       let outside = other.interfaces.get(rindex);
       if (curr && outside) {
-        // Setting address, current iface MAC, other node ID, outside MAC.
-        this.interfaces.set(lindex, [null, curr[1], other.id, outside[1]]);
-        other.interfaces.set(rindex, [outside[0], outside[1], this.id, null]);
+        // Setting address, current iface MAC, other node ID, outside MAC. This is only for switches.
+        this.interfaces.set(
+          lindex,
+          new Interface(this, curr.ip, other, outside.mac)
+        );
+        other.interfaces.set(rindex, new Interface(other, outside.ip, this));
       } else {
         return NoPortError;
       }
@@ -178,22 +188,18 @@ export class Router extends Node {
     returnRouter.currPacketQueue = parsedJSON.super.currPacketQueue;
     returnRouter.nextPacketQueue = parsedJSON.super.nextPacketQueue;
     try {
-      returnRouter.arpTable = new Map<Address4, [string, string]>(
+      returnRouter.arpTable = new Map<Address4, ArpEntry>(
         parsedJSON.super.arpTable
       );
     } catch (error) {
-      returnRouter.arpTable = new Map<Address4, [string, string]>();
+      returnRouter.arpTable = new Map<Address4, ArpEntry>();
     }
     try {
-      returnRouter.interfaces = new Map<
-        number,
-        [Address4 | null, string | null, string | null, string | null]
-      >(parsedJSON.super.interfaces);
+      returnRouter.interfaces = new Map<number, Interface>(
+        parsedJSON.super.interfaces
+      );
     } catch (error) {
-      returnRouter.interfaces = new Map<
-        number,
-        [Address4 | null, string | null, string | null, string | null]
-      >();
+      returnRouter.interfaces = new Map<number, Interface>();
     }
     returnRouter.id = parsedJSON.super.id;
     returnRouter.fwRules = parsedJSON.super.fwRules;
@@ -247,8 +253,27 @@ export class Machine extends Node {
     this.ip = ip;
   }
 
-  public send_ssh(ip: Address4) {
-    // let p = new Packet();
+  // Send a packet to a given IP, resolve ARP beforehand if needed.
+  public send_packet(
+    dstip: Address4,
+    payload: string,
+    app: PacketType,
+    net: Network
+  ) {
+    let arp = super.findAddrCached(dstip);
+    for (let iface of this.interfaces)
+      if (iface[1].ip && dstip.isInSubnet(iface[1].ip) && arp) {
+        let p = new Packet(
+          iface[1].srcnode,
+          iface[1].mac,
+          arp.dstmac,
+          iface[1].ip,
+          dstip,
+          payload,
+          app
+        );
+        super.route(p, net);
+      }
   }
 
   public handle(p: Packet, net: Network): Array<NetworkError> | null {
@@ -339,22 +364,18 @@ export class Machine extends Node {
     returnMachine.currPacketQueue = parsedJSON.super.currPacketQueue;
     returnMachine.nextPacketQueue = parsedJSON.super.nextPacketQueue;
     try {
-      returnMachine.arpTable = new Map<Address4, [string, string]>(
+      returnMachine.arpTable = new Map<Address4, ArpEntry>(
         parsedJSON.super.arpTable
       );
     } catch (error) {
-      returnMachine.arpTable = new Map<Address4, [string, string]>();
+      returnMachine.arpTable = new Map<Address4, ArpEntry>();
     }
     try {
-      returnMachine.interfaces = new Map<
-        number,
-        [Address4 | null, string | null, string | null, string | null]
-      >(parsedJSON.super.interfaces);
+      returnMachine.interfaces = new Map<number, Interface>(
+        parsedJSON.super.interfaces
+      );
     } catch (error) {
-      returnMachine.interfaces = new Map<
-        number,
-        [Address4 | null, string | null, string | null, string | null]
-      >();
+      returnMachine.interfaces = new Map<number, Interface>();
     }
     returnMachine.id = parsedJSON.super.id;
     returnMachine.fwRules = parsedJSON.super.fwRules;

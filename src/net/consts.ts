@@ -1,1 +1,1 @@
-export const broadcastmac: string = "ff:ff:ff:ff:ff:ff";
+export const broadcastmac: string = "00:00:00:00:00:00";
