@@ -2,9 +2,9 @@
   import UI from "../lib/UI.svelte";
   import Canvas from "../lib/Canvas.svelte";
   import { Network } from "../net/net";
-  import { Machine, Switch } from "../net/subnodes";
-  import { Address4 } from "ip-address";
+  import { Machine, Router, Switch } from "../net/subnodes";
   import Modal from "../lib/UI/Modal.svelte";
+  import { Address4 } from "ip-address/dist/ipv4";
 
   const urlParam = new URLSearchParams(window.location.search).get("level");
   $: openModal = urlParam === "upload"
@@ -19,28 +19,38 @@
   net.add_node(
     new Machine(2, new Address4("10.0.3.4/24"), undefined, undefined, 80, 80)
   );
-
   let uploadedFiles : any;
 
   let handleFileUpload = (event: { target: { files: any; }; }) => {
     uploadedFiles = event.target.files;
   }
 
-  let handleSubmitFile = () => {
+  let handleSubmitFile = async () => {
     if(uploadedFiles.length > 0) {
       const file = uploadedFiles[0];
       const reader = new FileReader();
 
       reader.onload = function(e) {
         const fileContent = e.target?.result as string;
+        let parsedJSON = JSON.parse(fileContent).network;
         try {
-          let testSwitch = Switch.parseJSON(fileContent);
-          console.log(testSwitch);
+          for(let currSwitch of parsedJSON.switches) {
+            net.add_node(Switch.parseJSON(JSON.stringify(currSwitch)));
+            console.log(Switch.parseJSON(JSON.stringify(currSwitch)));
+          }
+          for(let currRouter of parsedJSON.routers) {
+            net.add_node(Router.parseJSON(JSON.stringify(currRouter)));
+            console.log(Router.parseJSON(JSON.stringify(currRouter)));
+          }
+
+          for(let currMachine of parsedJSON.machines) {
+            net.add_node(Machine.parseJSON(JSON.stringify(currMachine)));
+            console.log(Machine.parseJSON(JSON.stringify(currMachine)));
+          }
         } catch (error) {
           console.log(`Error: ${error}`)
         }
       };
-
       reader.readAsText(file);
     }
   }
@@ -51,14 +61,15 @@
     <Modal showModal={openModal}>
       <h2>Please upload your network JSON object</h2>
       <input type="file" name="filename" on:change={handleFileUpload}>
-      <input type="submit" on:click={() => {
+      <input type="submit" on:click={async () => {
         openModal = !openModal;
-        handleSubmitFile();
+        await handleSubmitFile();
+        console.log(net);
       }}>
     </Modal>
   {/if}
   <div class="ui">
-    <UI openModal={openModal}/>
+    <UI />
   </div>
   <div class="canvas">
     <Canvas {net} />

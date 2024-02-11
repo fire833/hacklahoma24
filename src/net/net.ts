@@ -45,8 +45,8 @@ export abstract class Node {
     if (id) {
       this.id = id;
     }
-    this.nodeX = x;
-    this.nodeY = y;
+    this.nodeX = x ?? 0;
+    this.nodeY = y ?? 0;
 
     // create all of our interfaces. [IP, MAC].
     this.interfaces = new Map<
