@@ -47,6 +47,17 @@ export function placeCanvas(
   app.stage.scale.y = 2;
   app.stage.scale.x = 2;
 
+  // Function to handle resize event
+  function resize() {
+    app.renderer.resize(window.innerWidth, window.innerHeight);
+    viewport.resize(window.innerWidth, window.innerHeight);
+  }
+
+  // Listen for window resize events
+  window.addEventListener("resize", resize);
+
+  resize();
+
   return [app, viewport];
 }
 
