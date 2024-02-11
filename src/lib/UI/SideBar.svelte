@@ -113,11 +113,11 @@
     {/if}
 
     {#if counter >= 2}
-      <a href="sim?level=tutorial_1" on:click={backwardClick}>Back</a>
+      <button on:click={backwardClick}>Back</button>
     {/if}
 
     {#if counter <= 3}
-      <a href="sim?level=tutorial_1" on:click={forwardClick}>Next</a>
+      <button on:click={forwardClick}>Next</button>
     {/if}
   {:else if setting === SideBarModes.PacketFlows}
     {#if currNode}
