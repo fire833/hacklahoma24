@@ -1,9 +1,12 @@
 import * as PIXI from "pixi.js";
-import type { Network } from "../../net/net";
+import { Network, NodeType } from "../../net/net";
 import { VisEdge, VisNode, VisPacket } from "./visObjects";
 
-import Envelope from "../../assets/sprites/Envelope.png";
 import Router from "../../assets/sprites/Router.png";
+import Switch from "../../assets/sprites/Switch.png";
+import Toaster from "../../assets/sprites/Toaster.png";
+import Car from "../../assets/sprites/Car.png";
+import Computer from "../../assets/sprites/Computer.png";
 
 import { viewport, app, placeCanvas } from "./placeCanvas.js";
 
@@ -25,16 +28,25 @@ export class SimObject {
 
   tick(): void {}
 
-  async loadTextures(): Promise<PIXI.Texture[]> {
-    const envelopeTexture: PIXI.Texture<PIXI.Resource> =
-      await PIXI.Assets.load(Envelope);
-    const routerTexture: PIXI.Texture<PIXI.Resource> =
-      await PIXI.Assets.load(Router);
-    return [envelopeTexture, routerTexture];
+  async loadTextures(): Promise<Map<NodeType, PIXI.Texture<PIXI.Resource>[]>> {
+    let textureMap: Map<NodeType, PIXI.Texture<PIXI.Resource>[]> = new Map<
+      NodeType,
+      PIXI.Texture<PIXI.Resource>[]
+    >();
+
+    textureMap.set(NodeType.Router, [await PIXI.Assets.load(Router)]);
+    textureMap.set(NodeType.Switch, [await PIXI.Assets.load(Switch)]);
+    textureMap.set(NodeType.Machine, [
+      await PIXI.Assets.load(Computer),
+      await PIXI.Assets.load(Toaster),
+      await PIXI.Assets.load(Car),
+    ]);
+    return textureMap;
   }
 
   async buildObjects(net: Network) {
-    let textures: PIXI.Texture[] = await this.loadTextures();
+    let textureMap: Map<NodeType, PIXI.Texture<PIXI.Resource>[]> =
+      await this.loadTextures();
     // load the texture we need
     let graph = net.get_graph();
 
@@ -51,15 +63,19 @@ export class SimObject {
     });
 
     // Draw edges
-
     edges.forEach((edge) => {
       let g = new VisEdge(edge, graph[0]);
       this.edges.push(g);
       app.stage.addChild(<PIXI.DisplayObject>g.graphic);
     });
 
+    // Draw nodes
     graph[0].forEach((v, k) => {
-      let g = new VisNode(v, textures[1]);
+      let textures = textureMap.get(v.nodeType);
+      let g = new VisNode(
+        v,
+        textures[Math.floor(Math.random() * textures.length)]
+      );
       this.nodes.push(g);
       app.stage.addChild(<PIXI.DisplayObject>g.graphic);
       g.graphic.on("pointerdown", this.startDrag);
