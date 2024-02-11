@@ -1,14 +1,13 @@
 <script lang="ts">
   
-  import { Sprite } from "pixi.js";
-import { spring } from "svelte/motion";
-import Car from "../../assets/sprites/Car.png";
+  import Car from "../../assets/sprites/Car.png";
   import Computer from "../../assets/sprites/Computer.png"
   import Router from "../../assets/sprites/Router.png"
   import Toaster from "../../assets/sprites/Toaster.png"
 
   export let open = false;
 
+  let current = '';
   let names1 = "Name/ID"
   let names2 = "IP"
   let names3 = "MAC"
@@ -38,8 +37,9 @@ import Car from "../../assets/sprites/Car.png";
   <img class ="img2" src={ Toaster } alt = "Image">
     {/each}
   <div id="blocks-container">
-  {#each applications as { name, logo } (logo)}  
-    <button on:click={() => handleButtonClick(name)} id="app-blocks">
+   {#each applications as { name, logo } (logo)}  
+    <button class="{current === name ? 'selected' : ''}"
+      on:click="{() => current = name}" id="app-blocks"> 
       <img src={logo} alt={`${name} Logo`} />
       <p>{name}</p>
     </button>
@@ -78,6 +78,26 @@ import Car from "../../assets/sprites/Car.png";
     left: 150px;
   }
 
+
+  .selected {
+    background-color: brown;
+  }
+
+
+  button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+
   #blocks-container {
     display: flex;
     flex-wrap: wrap; 
@@ -85,7 +105,7 @@ import Car from "../../assets/sprites/Car.png";
   }
 
   #app-blocks {
-    border: solid 1px rgb(190, 29, 29);
+    
     padding: 5px;
     max-width: 250px;
     margin-bottom: 10px; 
