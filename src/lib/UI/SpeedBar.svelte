@@ -1,34 +1,46 @@
 <script lang="ts">
   import { speed } from "../../stores.js";
 
-  let setting: Number;
-
-  speed.subscribe((value) => {
-    setting = value;
-  });
+  let slider: HTMLInputElement;
 
   function updateSpeed() {
-    setting = document.getElementById("sendSpeed").value;
-    speed.update(() => setting);
+    speed.update(() => Number(slider.value));
   }
 </script>
 
 <div id="bg">
-  <input
-    type="range"
-    min="1"
-    max="100"
-    on:change={() => updateSpeed()}
-    class="slider"
-    id="sendSpeed"
-  />
+  <div>Simulation Speed</div>
+  <div>
+    <input
+      type="range"
+      min="1"
+      max="100"
+      bind:this={slider}
+      on:change={updateSpeed}
+    />
+    <div id="labels">
+      <div>1 t/s</div>
+      <div>100 t/s</div>
+    </div>
+  </div>
 </div>
 
 <style>
   #bg {
-    justify-content: space-between;
-    background-color: rgb(58, 52, 52);
-    padding: 10px;
+    display: flex;
+    flex-direction: row;
+
+    padding: 20px;
     margin: 0 auto;
+    background-color: rgb(58, 52, 52);
+
+    align-items: center;
+    gap: 20px;
+  }
+
+  #labels {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
   }
 </style>
