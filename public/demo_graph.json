@@ -1,0 +1,13 @@
+{
+	"network": {
+		"switches": [
+			{"type":3,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":{},"interfaces":{},"id":"node-xqfzkg98","fwRules":[],"nodeX":50,"nodeY":20}}
+		],
+		"routers": [
+			{"type":0,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":{},"interfaces":{},"id":"node-tc29s07x","fwRules":[],"nodeX":-20,"nodeY":20}}
+		],
+		"machines": [
+			{"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":{},"interfaces":{},"id":"node-klog8th7","fwRules":[],"nodeX":-100,"nodeY":-50},"ip":{"groups":4,"parsedAddress":["1","1","1","1"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"1.1.1.1","addressMinusSuffix":"1.1.1.1"},"mType":2}
+		]
+	}
+}
