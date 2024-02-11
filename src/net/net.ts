@@ -271,6 +271,8 @@ export abstract class Node {
 export class Network {
   public net: Map<string, Node> = new Map<string, Node>();
 
+  public active_node: string = "unknown";
+
   public tick() {
     for (let node of this.net) {
       node[1].tick(this);

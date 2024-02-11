@@ -1,7 +1,5 @@
 import * as PIXI from "pixi.js";
-import type { Network, Node } from "../../net/net.js";
-import { viewport, app, placeCanvas } from "./placeCanvas.js";
-import { SimObject } from "./sim.js";
+import type { Node } from "../../net/net.js";
 
 export class VisNode {
   node: Node | undefined;

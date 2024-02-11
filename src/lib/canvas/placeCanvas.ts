@@ -1,9 +1,5 @@
-import * as PIXI from "pixi.js";
 import { Viewport } from "pixi-viewport";
-import Envelope from "../../assets/sprites/Envelope.png";
-import Router from "../../assets/sprites/Router.png";
-import { VisMode, visMode, speed } from "../../stores";
-import type { Network, Node } from "../../net/net.js";
+import * as PIXI from "pixi.js";
 
 export let viewport: Viewport;
 export let app: PIXI.Application<HTMLCanvasElement>;

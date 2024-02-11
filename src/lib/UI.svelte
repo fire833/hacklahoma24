@@ -14,7 +14,7 @@
   </div>
 
   <div class="sidebar">
-    <SideBar {open}></SideBar>
+    <SideBar {open} {net}></SideBar>
   </div>
 
   <div class="speedbar">

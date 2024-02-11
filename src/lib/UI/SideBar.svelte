@@ -1,15 +1,16 @@
 <script lang="ts">
   import { writable } from "svelte/store";
   import AppButtons from "./AppButtons.svelte";
-  import Interface from "./Interface.svelte";
   import tutorialData1 from "../../../public/tutorials/Tutorial_1.json";
-  import tutorialData2 from "../../../public/tutorials/Tutorial_2.json";
+  import type { Network } from "../../net/net";
 
   let currentTut = tutorialData1;
 
   enum SideBarModes {
     Tutorial,
     Node,
+    PacketFlows,
+    NodeEditing,
   }
 
   let setting: SideBarModes = SideBarModes.Tutorial;
@@ -24,6 +25,9 @@
   }
 
   export let open = false;
+  export let net: Network;
+  $: currNode = net.net.get(net.active_node);
+
   let nodeName = "Test Node";
 
   let counter = 1;
@@ -60,9 +64,15 @@
     <h1>{nodeName}</h1>
     <h2>Interfaces</h2>
 
-    {#each interfaces as i}
-      <Interface />
-    {/each}
+    {#if currNode}
+      {#each currNode.interfaces as [index, iface]}
+        <div>
+          <h2>Interface {index}</h2>
+          <h3>IP: {iface.ip}</h3>
+          <h3>MAC: {iface.mac}</h3>
+        </div>
+      {/each}
+    {/if}
 
     <h2>Applications</h2>
     <div id="apps-container">
@@ -89,7 +99,7 @@
     {#if counter <= 6}
       <a href="sim?level=tutorial_{counter}" on:click={forwardClick}>Next</a>
     {/if}
-  {/if}
+  {:else if setting === SideBarModes.PacketFlows}{:else if setting === SideBarModes.NodeEditing}{/if}
 </div>
 
 <style>

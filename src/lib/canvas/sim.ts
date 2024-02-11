@@ -8,17 +8,17 @@ import Toaster from "../../assets/sprites/Toaster.png";
 import Car from "../../assets/sprites/Car.png";
 import Computer from "../../assets/sprites/Computer.png";
 
-import { viewport, app, placeCanvas } from "./placeCanvas.js";
+import { app } from "./placeCanvas.js";
 
 export let dragging: any;
-let offset = new PIXI.Point();
-let dragTarget: any;
 
 export class SimObject {
+  offset: PIXI.Point = new PIXI.Point();
   net: Network;
   nodes: VisNode[] = [];
   edges: VisEdge[] = [];
   packets: VisPacket[] = [];
+  dragTarget: any = null;
 
   constructor(net: Network) {
     this.net = net;
@@ -50,8 +50,6 @@ export class SimObject {
     // load the texture we need
     let graph = net.get_graph();
 
-    // Make fake edges for debugging
-
     let edges: string[][] = [];
 
     let nodeArray = Array.from(graph[0].keys());
@@ -77,9 +75,9 @@ export class SimObject {
         textures[Math.floor(Math.random() * textures.length)]
       );
       this.nodes.push(g);
-      app.stage.addChild(<PIXI.DisplayObject>g.graphic);
       g.graphic.on("pointerdown", this.startDrag);
       g.graphic.on("pointerup", this.stopDrag);
+      app.stage.addChild(<PIXI.DisplayObject>g.graphic);
     });
   }
 
@@ -92,18 +90,18 @@ export class SimObject {
   startDrag(event: any) {
     console.log("startDrag");
     app.stage.cursor = "pointer";
-    dragTarget = event.target;
-    dragTarget.toLocal(event.global, null, offset);
-    offset.x *= dragTarget.scale.x;
-    offset.y *= dragTarget.scale.y;
+    this.dragTarget = event.target;
+    this.dragTarget.toLocal(event.global, null, this.offset);
+    this.offset.x *= this.dragTarget.scale.x;
+    this.offset.y *= this.dragTarget.scale.y;
     app.stage.on("pointermove", this.moveDrag);
   }
 
   // Handler for pointermove
   moveDrag(event: any): void {
     console.log("moveDrag");
-    dragTarget.x = event.global.x - offset.x;
-    dragTarget.y = event.global.y - offset.y;
+    this.dragTarget.x = event.global.x - this.offset.x;
+    this.dragTarget.y = event.global.y - this.offset.y;
   }
 
   stopDrag() {
