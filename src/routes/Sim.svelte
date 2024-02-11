@@ -2,7 +2,7 @@
   import UI from "../lib/UI.svelte";
   import Canvas from "../lib/Canvas.svelte";
   import { Network } from "../net/net";
-  import { Machine, Switch } from "../net/nodes";
+  import { Machine, Switch } from "../net/subnodes";
   import { Address4 } from "ip-address";
 
   let net = new Network();
