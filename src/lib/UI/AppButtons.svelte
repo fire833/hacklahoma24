@@ -3,16 +3,18 @@
   import Computer from "../../assets/sprites/Computer.png";
   import Router from "../../assets/sprites/Router.png";
   import { onMount } from 'svelte';
-
   import { Link } from "svelte-routing";
+  let current = "";
   let applications = [
     { name: "Ping", logo: Car },
     { name: "YouTube", logo: Computer },
     { name: "Netflix", logo: Router },
   ];
 
-  let current = "";
+
   const urlParam = new URLSearchParams(window.location.search).get("level");
+
+
 </script>
 
 {#each applications as { name, logo } (logo)}
@@ -24,7 +26,6 @@
     {name}
   </button>
 {/each}
-
 
 <style>
   .app {
