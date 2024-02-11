@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import { Network, NodeType } from "../../net/net";
+import { MachineType } from "../../net/subnodes";
 import { VisEdge, VisNode, VisPacket } from "./visObjects";
 
 import Router from "../../assets/sprites/Router.png";
@@ -28,25 +29,24 @@ export class SimObject {
 
   tick(): void {}
 
-  async loadTextures(): Promise<Map<NodeType, PIXI.Texture<PIXI.Resource>[]>> {
-    let textureMap: Map<NodeType, PIXI.Texture<PIXI.Resource>[]> = new Map<
-      NodeType,
+  async loadTextures(): Promise<Map<NodeType | MachineType, PIXI.Texture<PIXI.Resource>[]>> {
+    let textureMap: Map<NodeType | MachineType, PIXI.Texture<PIXI.Resource>[]> = new Map<
+      NodeType | MachineType,
       PIXI.Texture<PIXI.Resource>[]
     >();
 
     textureMap.set(NodeType.Router, [await PIXI.Assets.load(Router)]);
     textureMap.set(NodeType.Switch, [await PIXI.Assets.load(Switch)]);
-    textureMap.set(NodeType.Machine, [
-      await PIXI.Assets.load(Computer),
-      await PIXI.Assets.load(Toaster),
-      await PIXI.Assets.load(Car),
-    ]);
+    textureMap.set(MachineType.Computer, [await PIXI.Assets.load(Computer)]);
+    textureMap.set(MachineType.Toaster, [await PIXI.Assets.load(Toaster)]);
+    textureMap.set(MachineType.Car, [await PIXI.Assets.load(Car)]);
+
     return textureMap;
   }
 
   async buildObjects(net: Network) {
-    let textureMap: Map<NodeType, PIXI.Texture<PIXI.Resource>[]> =
-      await this.loadTextures();
+    let textureMap: Map<NodeType | MachineType, PIXI.Texture<PIXI.Resource>[]>
+      = await this.loadTextures();
     // load the texture we need
     let graph = net.get_graph();
 
@@ -55,8 +55,8 @@ export class SimObject {
     let nodeArray = Array.from(graph[0].keys());
 
     graph[0].forEach((v, k) => {
-      for(let otherNode of nodeArray) {
-        edges.push(Array(k, otherNode));
+      for (let otherNode of nodeArray) {
+        edges.push([k, otherNode]);
       }
     });
 
@@ -64,21 +64,49 @@ export class SimObject {
     edges.forEach((edge) => {
       let g = new VisEdge(edge, graph[0]);
       this.edges.push(g);
-      app.stage.addChild(<PIXI.DisplayObject>g.graphic);
+      app.stage.addChild(g.graphic);
     });
 
     // Draw nodes
     graph[0].forEach((v, k) => {
-      let textures = textureMap.get(v.nodeType);
-      let g = new VisNode(
-        v,
-        textures[Math.floor(Math.random() * textures.length)]
-      );
-      this.nodes.push(g);
-      g.graphic.on("pointerdown", this.startDrag);
-      g.graphic.on("pointerup", this.stopDrag);
-      app.stage.addChild(<PIXI.DisplayObject>g.graphic);
+      let texture;
+      if(v.nodeType === NodeType.Router || v.nodeType === NodeType.Switch) {
+        let textures = textureMap.get(v.nodeType);
+        console.log(Math.floor(Math.random() * textures?.length))
+        let g = new VisNode(
+          v,
+          textures[Math.floor(Math.random() * textures.length)]
+        );
+        this.nodes.push(g);
+        g.graphic.on("pointerdown", this.startDrag);
+        g.graphic.on("pointerup", this.stopDrag);
+        app.stage.addChild(<PIXI.DisplayObject>g.graphic);
+      } else {
+        switch (v.mType) {
+          case MachineType.Computer:
+            texture = textureMap.get(MachineType.Computer)[0];
+            break;
+          case MachineType.Toaster:
+            texture = textureMap.get(MachineType.Toaster)[0];
+            break;
+          case MachineType.Car:
+            texture = textureMap.get(MachineType.Car)[0];
+            break;
+          default:
+            // Handle other machine types if needed
+            break;
+        }
+      }
+      
+      if (texture) {
+        let g = new VisNode(v, texture);
+        this.nodes.push(g);
+        g.graphic.on("pointerdown", this.startDrag);
+        g.graphic.on("pointerup", this.stopDrag);
+        app.stage.addChild(g.graphic);
+      }
     });
+
   }
 
   setUpDrag() {
