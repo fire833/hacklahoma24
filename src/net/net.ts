@@ -35,8 +35,8 @@ export abstract class Node {
   // firewall rules for stuff
   private fwRules: Array<FirewallRule> = new Array<FirewallRule>();
 
-  public nodeX: number | undefined;
-  public nodeY: number | undefined;
+  public nodeX: number | undefined = 0;
+  public nodeY: number | undefined = 0;
 
   constructor(numPorts: number, id?: string, x?: number, y?: number) {
     if (id) {
@@ -195,18 +195,18 @@ export abstract class Node {
       this.arpTable.set(p.srcip, [p.srcmac, p.srcnode]);
   }
 
-  public toJSON() : string {
+  public toJSON(): string {
     return JSON.stringify({
-      "inPacketLog": this.inPacketLog,
-      "outPacketLog": this.outPacketLog,
-      "currPacketQueue": this.currPacketQueue,
-      "nextPacketQueue": this.nextPacketQueue,
-      "arpTable": this.arpTable,
-      "interfaces": this.interfaces,
-      "id": this.id,
-      "fwRules": this.fwRules,
-      "nodeX": this.nodeX,
-      "nodeY": this.nodeY,
+      inPacketLog: this.inPacketLog,
+      outPacketLog: this.outPacketLog,
+      currPacketQueue: this.currPacketQueue,
+      nextPacketQueue: this.nextPacketQueue,
+      arpTable: this.arpTable,
+      interfaces: this.interfaces,
+      id: this.id,
+      fwRules: this.fwRules,
+      nodeX: this.nodeX,
+      nodeY: this.nodeY,
     });
   }
 }
