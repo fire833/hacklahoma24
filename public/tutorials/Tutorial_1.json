@@ -39,8 +39,8 @@
       "routers": [
       ],
       "machines": [
-        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-wy1h6h00","fwRules":[],"nodeX":250,"nodeY":75},"ip":{"groups":4,"parsedAddress":["127","0","0","0"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.0","addressMinusSuffix":"127.0.0.0"},"mType":0},
-        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-pd33mcfl","fwRules":[],"nodeX":250,"nodeY":375},"ip":{"groups":4,"parsedAddress":["127","0","0","1"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.1","addressMinusSuffix":"127.0.0.1"},"mType":0}
+        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-wy1h6h00","fwRules":[],"nodeX":300,"nodeY":200},"ip":{"groups":4,"parsedAddress":["127","0","0","0"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.0","addressMinusSuffix":"127.0.0.0"},"mType":0},
+        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-pd33mcfl","fwRules":[],"nodeX":475,"nodeY":230},"ip":{"groups":4,"parsedAddress":["127","0","0","1"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.1","addressMinusSuffix":"127.0.0.1"},"mType":0}
       ]
     }
   }
