@@ -23,10 +23,10 @@ export abstract class Node {
     [string, string]
   >();
 
-  // Mapping of all interfaces indices with the appropriate IP/MAC/Node.
+  // Mapping of all interfaces indices with the appropriate IP/MAC/Node/Othermac (the MAC address on the other side of the physical connection, only used for switches).
   public interfaces: Map<
     number,
-    [Address4 | null, string | null, string | null]
+    [Address4 | null, string | null, string | null, string | null]
   >;
 
   // assign a random node id to each node we create.
@@ -48,10 +48,10 @@ export abstract class Node {
     // create all of our interfaces. [IP, MAC].
     this.interfaces = new Map<
       number,
-      [Address4 | null, string, string | null]
+      [Address4 | null, string, string | null, string | null]
     >();
     for (let i = 0; i < numPorts; i++) {
-      this.interfaces.set(i, [null, makeRandomMAC(), null]);
+      this.interfaces.set(i, [null, makeRandomMAC(), null, null]);
     }
   }
 
@@ -115,19 +115,13 @@ export abstract class Node {
     let rindex = other.get_free_nic();
     if (lindex && rindex) {
       let curr = this.interfaces.get(lindex);
-      if (curr) {
-        this.interfaces.set(lindex, [curr[0], curr[1], other.id]);
-      } else {
-        return NoPortError;
-      }
-
       let outside = other.interfaces.get(rindex);
-      if (outside) {
-        this.interfaces.set(rindex, [outside[0], outside[1], this.id]);
+      if (curr && outside) {
+        this.interfaces.set(lindex, [curr[0], curr[1], other.id, curr[3]]);
+        this.interfaces.set(rindex, [outside[0], outside[1], this.id, curr[3]]);
       } else {
         return NoPortError;
       }
-
       return null;
     } else {
       return NoPortError;
@@ -195,8 +189,8 @@ export abstract class Node {
       this.arpTable.set(p.srcip, [p.srcmac, p.srcnode]);
   }
 
-  public toJSON(): string {
-    return JSON.stringify({
+  public toJSON(): object {
+    return {
       inPacketLog: this.inPacketLog,
       outPacketLog: this.outPacketLog,
       currPacketQueue: this.currPacketQueue,
@@ -207,7 +201,7 @@ export abstract class Node {
       fwRules: this.fwRules,
       nodeX: this.nodeX,
       nodeY: this.nodeY,
-    });
+    };
   }
 }
 

@@ -1,6 +1,11 @@
 import { Address4 } from "ip-address";
 import { broadcastmac } from "./consts";
-import { NetworkError, NoNodeError, NoSwitchportError } from "./errors";
+import {
+  NetworkError,
+  NoNodeError,
+  NoPortError,
+  NoSwitchportError,
+} from "./errors";
 import { Network, Node, Packet, PacketType } from "./net";
 
 enum NodeType {
@@ -31,35 +36,51 @@ export class Switch extends Node {
           if (node) {
             p.srcnode = super.id;
             node.appendPacket(p);
+            super.handleOut(p);
           } else {
             arr.push(NoNodeError);
           }
         }
       return null;
-    } else if (this.macToIface.has(p.dstmac)) {
-      let n = this.macToIface.get(p.dstmac);
-      if (n) {
-        p.srcnode = super.id;
-        super.handleOut(p);
-        return null;
+    } else if (this.getInterfaceToForward(p.dstmac)) {
+      let dstnode = this.getInterfaceToForward(p.dstmac);
+      if (dstnode) {
+        let n = net.net.get(dstnode);
+        if (n) {
+          p.srcnode = super.id;
+          n.appendPacket(p);
+          super.handleOut(p);
+          return null;
+        } else {
+          arr.push(NoNodeError);
+          return arr;
+        }
       } else {
-        arr.push(NoNodeError);
+        arr.push(NoSwitchportError);
         return arr;
       }
     } else {
-      arr.push(NoSwitchportError);
+      arr.push(NoNodeError);
       return arr;
     }
   }
 
-  public override toJSON() : object {
-    return {
-      "type": NodeType.Switch,
-      "super": super.toJSON(),
+  private getInterfaceToForward(dstmac: string): string | null {
+    for (let iface of super.interfaces) {
+      if (iface[1][3] === dstmac) return iface[1][2];
     }
+
+    return null;
   }
 
-  public static parseJSON(json : string) : Switch {
+  public override toJSON(): object {
+    return {
+      type: NodeType.Switch,
+      super: super.toJSON(),
+    };
+  }
+
+  public static parseJSON(json: string): Switch {
     let returnSwitch = new Switch(1);
     let parsedJSON = JSON.parse(json);
 
@@ -75,6 +96,26 @@ export class Switch extends Node {
     returnSwitch.nodeY = parsedJSON.super.nodeY;
 
     return returnSwitch;
+  }
+
+  // Custom edge code for switches only.
+  public override add_edge(other: Node): NetworkError | null {
+    let lindex = this.get_free_nic();
+    let rindex = other.get_free_nic();
+    if (lindex && rindex) {
+      let curr = this.interfaces.get(lindex);
+      let outside = other.interfaces.get(rindex);
+      if (curr && outside) {
+        // Setting address, current iface MAC, other node ID, outside MAC.
+        this.interfaces.set(lindex, [null, curr[1], other.id, outside[1]]);
+        other.interfaces.set(rindex, [outside[0], outside[1], this.id, null]);
+      } else {
+        return NoPortError;
+      }
+      return null;
+    } else {
+      return NoPortError;
+    }
   }
 }
 
@@ -114,7 +155,11 @@ export class Router extends Node {
                 return null;
               }
             } else {
-              super.interfaces;
+              // Need to run ARP.
+              for (let iface of super.interfaces) {
+                if (iface[1][0] && p.dstip.isInSubnet(iface[1][0])) {
+                }
+              }
             }
           }
         }
@@ -126,14 +171,14 @@ export class Router extends Node {
 
   public add_route(subnet: Address4, node: string) {}
 
-  public override toJSON() : object {
+  public override toJSON(): object {
     return {
-      "type": NodeType.Router,
-      "super": super.toJSON(),
-    }
+      type: NodeType.Router,
+      super: super.toJSON(),
+    };
   }
 
-  public static parseJSON(json : string) : Router {
+  public static parseJSON(json: string): Router {
     let returnRouter = new Router(1);
     let parsedJSON = JSON.parse(json);
 
@@ -189,7 +234,7 @@ export class Machine extends Node {
     }
   }
 
-  public setIP(ip : Address4) : void {
+  public setIP(ip: Address4): void {
     this.ip = ip;
   }
 
@@ -223,16 +268,16 @@ export class Machine extends Node {
     return null;
   }
 
-  public override toJSON() : object {
+  public override toJSON(): object {
     return {
-      "type": NodeType.Machine,
-      "super": super.toJSON(),
-      "ip": this.ip,
-      "mType": this.mType,
-    }
+      type: NodeType.Machine,
+      super: super.toJSON(),
+      ip: this.ip,
+      mType: this.mType,
+    };
   }
 
-  public static parseJSON(json : string) : Machine {
+  public static parseJSON(json: string): Machine {
     let returnMachine = new Machine(1, new Address4("1.1.1.1"));
     let parsedJSON = JSON.parse(json);
 
@@ -272,14 +317,14 @@ export class InternetGateway extends Node {
     return null;
   }
 
-  public override toJSON() : object {
+  public override toJSON(): object {
     return {
-      "type": NodeType.InternetGateway,
-      "super": super.toJSON(),
+      type: NodeType.InternetGateway,
+      super: super.toJSON(),
     };
   }
 
-  public static parseJSON(json : string) : InternetGateway {
+  public static parseJSON(json: string): InternetGateway {
     let returnInternetGateway = new Router(1);
     let parsedJSON = JSON.parse(json);
 
