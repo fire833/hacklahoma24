@@ -2,8 +2,8 @@
   import { writable } from "svelte/store";
   import AppButtons from "./AppButtons.svelte";
   import Interface from "./Interface.svelte";
-  import tutorialData1 from "./Tutorial_1.json";
-  import tutorialData2 from "./Tutorial_2.json";
+  import tutorialData1 from "../../../public/tutorials/Tutorial_1.json";
+  import tutorialData2 from "../../../public/tutorials/Tutorial_2.json";
 
   let currentTut = tutorialData1;
 
