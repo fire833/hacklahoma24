@@ -162,6 +162,11 @@
   .open {
     transform: translate(0, 0);
   }
+
+  .button-group {
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
   .pill {
     background-color: rgba(256, 256, 256, 0.4);
   }
@@ -169,7 +174,9 @@
   .toggle {
     z-index: 20;
     border-radius: 0 8px 0 0;
-    transition: transform 0.3s ease;
+    transition:
+      transform 0.3s ease,
+      border 0.2s;
     border-bottom: 0;
     border-left: 0;
   }
