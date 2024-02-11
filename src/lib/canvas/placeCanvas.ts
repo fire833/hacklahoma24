@@ -52,17 +52,6 @@ export async function addStarterObjects(net: Network) {
   const routerTexture: PIXI.Texture<PIXI.Resource> =
     await PIXI.Assets.load(Router);
 
-  let text = new PIXI.HTMLText("Speed: " + speed + " visMode: " + visMode, {
-    fontSize: 20,
-    fill: "white",
-  });
-
-  viewport.addChild(text);
-
-  speed.subscribe((value) => {
-    text.text = "Speed: " + value;
-  });
-
   let graph = net.get_graph();
 
   // Make fake edges for debugging
@@ -76,8 +65,6 @@ export async function addStarterObjects(net: Network) {
       nodeArray[Math.floor(Math.random() * nodeArray.length)];
     edges.push(Array(k, otherNode));
   });
-
-  console.log(edges);
 
   // Draw edges
 
@@ -111,7 +98,7 @@ function drawLine(edge: string[], nodeMap: Map<string, Node>) {
 
   graphic.moveTo(x1, y1);
 
-  graphic.lineStyle(2, 0xffffff).lineTo(x2, y2);
+  graphic.lineStyle(2, 0xc70cd2).lineTo(x2, y2);
 
   graphic.closePath();
   graphic.endFill();
