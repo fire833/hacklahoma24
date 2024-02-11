@@ -10,9 +10,6 @@
       <Link to="/sim?level=tutorial_1">Start</Link>
     </div>
     <div>
-      <Link to="/sim?level=local">Use Local Storage</Link>
-    </div>
-    <div>
       <Link to="/sim?level=upload">Upload File</Link>
     </div>
   </div>
