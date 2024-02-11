@@ -1,12 +1,19 @@
 <script lang="ts">
   import { afterUpdate, onMount } from "svelte";
-  import { placeCanvas } from "./canvas/placeCanvas.js";
+  import { addStarterObjects, placeCanvas } from "./canvas/placeCanvas.js";
   import { speed, visMode } from "../stores";
+  import type { Network } from "../net/net.js";
+  import type { Application } from "pixi.js";
+
+  export let net: Network;
 
   let canvas: HTMLElement;
 
-  afterUpdate(() => {
-    placeCanvas(canvas, $speed, $visMode);
+  let app: Application<HTMLCanvasElement>;
+
+  onMount(async () => {
+    app = placeCanvas(canvas);
+    addStarterObjects(app, net, $speed, $visMode);
   });
 </script>
 
@@ -14,7 +21,6 @@
 
 <style>
   .canvas {
-    min-height: 100%;
     width: 100%;
   }
 </style>

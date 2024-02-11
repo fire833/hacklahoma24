@@ -21,7 +21,7 @@
     <UI />
   </div>
   <div class="canvas">
-    <Canvas />
+    <Canvas {net} />
   </div>
 </main>
 
