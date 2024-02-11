@@ -36,15 +36,6 @@ export function placeCanvas(canvas: HTMLElement) {
 export async function addStarterObjects(app: PIXI.Application<HTMLCanvasElement>, net: Network, speed: Number, visMode: VisMode) {
 
   
-    
-const back = new PIXI.Container();
-const foreground = new PIXI.Container()
-const viewport = new PIXI.Viewport({
-    worldWidth: 800,
-    worldHeight: 800,
-    passiveWheel: true,                            // whether the 'wheel' event is set to passive (note: if false, e.preventDefault() will be called when wheel is used over the viewport)
-});
-  
     // load the texture we need
     const envelopeTexture = await PIXI.Assets.load(Envelope);
     const routerTexture = await PIXI.Assets.load(Router);
