@@ -8,7 +8,7 @@
   import { Address4 } from "ip-address/dist/ipv4";
   import tutorialData1 from "../../public/tutorials/Tutorial_1.json";
   import tutorialData2 from "../../public/tutorials/Tutorial_1.json";
-  import tutorialData3 from "../../public/tutorials/Tutorial_3.json"
+  import tutorialData3 from "../../public/tutorials/Tutorial_3.json";
 
   let currentTut = tutorialData1;
 
@@ -100,8 +100,7 @@
     }
   };
 
-<<<<<<< Updated upstream
-  export function renderTutorialJSON() : void {
+  export function renderTutorialJSON(): void {
     console.log(currentTut);
     let parsedJSON = JSON.parse(JSON.stringify(currentTut)).network;
 
@@ -122,47 +121,23 @@
         console.log(Machine.parseJSON(JSON.stringify(currMachine)));
       }
 
-      let machine = []
+      let machine = [];
 
-      for(let curr of net.net.values()) {
+      for (let curr of net.net.values()) {
         machine.push(curr);
       }
 
       console.log(net.add_edge(machine[0].id, machine[1].id));
-      console.log(net.get_graph())
+      console.log(net.get_graph());
 
       net = net;
-=======
-  if (urlParam === "tutorial_1") {
-    let parsedJSON = JSON.parse(JSON.stringify(tutorialData1)).network;
-    try {
-      net = new Network();
-      for (let currSwitch of parsedJSON.switches) {
-        net.add_node(Switch.parseJSON(JSON.stringify(currSwitch)));
-        console.log(Switch.parseJSON(JSON.stringify(currSwitch)));
-      }
-      console.log("Finish switches");
-      for (let currRouter of parsedJSON.routers) {
-        net.add_node(Router.parseJSON(JSON.stringify(currRouter)));
-        console.log(Router.parseJSON(JSON.stringify(currRouter)));
-      }
-
-      for (let currMachine of parsedJSON.machines) {
-        net.add_node(Machine.parseJSON(JSON.stringify(currMachine)));
-        console.log(Machine.parseJSON(JSON.stringify(currMachine)));
-      }
-
-      net = net;
-      set_edges();
->>>>>>> Stashed changes
       console.log(net);
     } catch (error) {
       console.log(`Error: ${error}`);
     }
   }
 
-<<<<<<< Updated upstream
-  if(urlParam === "tutorial_1") {
+  if (urlParam === "tutorial_1") {
     let parsedJSON = JSON.parse(JSON.stringify(currentTut)).network;
 
     try {
@@ -182,14 +157,14 @@
         console.log(Machine.parseJSON(JSON.stringify(currMachine)));
       }
 
-      let machine = []
+      let machine = [];
 
-      for(let curr of net.net.values()) {
+      for (let curr of net.net.values()) {
         machine.push(curr);
       }
 
       console.log(net.add_edge(machine[0].id, machine[1].id));
-      console.log(net.get_graph())
+      console.log(net.get_graph());
 
       net = net;
       console.log(net);
@@ -197,9 +172,6 @@
       console.log(`Error: ${error}`);
     }
   }
-=======
-  console.log(JSON.stringify(new Switch(16, undefined, 250, 225)));
->>>>>>> Stashed changes
 </script>
 
 <main>
@@ -218,7 +190,7 @@
     </Modal>
   {/if}
   <div class="ui">
-    <UI {net} currentTut={currentTut}/>
+    <UI {net} {currentTut} />
   </div>
   <div class="canvas">
     <Canvas {net} />
