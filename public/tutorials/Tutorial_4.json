@@ -44,9 +44,9 @@
       "routers": [
       ],
       "machines": [
-        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-wy1h6h00","fwRules":[],"nodeX":225,"nodeY":175},"ip":{"groups":4,"parsedAddress":["127","0","0","0"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.0","addressMinusSuffix":"127.0.0.0"},"mType":0},
-        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-pd33mcfl","fwRules":[],"nodeX":325,"nodeY":175},"ip":{"groups":4,"parsedAddress":["127","0","0","1"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.1","addressMinusSuffix":"127.0.0.1"},"mType":1},
-        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-pd32mcfl","fwRules":[],"nodeX":250,"nodeY":250},"ip":{"groups":4,"parsedAddress":["127","0","0","2"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.1","addressMinusSuffix":"127.0.0.1"},"mType":2}        
+        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-wy1h6h00","fwRules":[],"nodeX":425,"nodeY":175},"ip":{"groups":4,"parsedAddress":["127","0","0","0"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.0","addressMinusSuffix":"127.0.0.0"},"mType":0},
+        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-pd33mcfl","fwRules":[],"nodeX":525,"nodeY":175},"ip":{"groups":4,"parsedAddress":["127","0","0","1"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.1","addressMinusSuffix":"127.0.0.1"},"mType":1},
+        {"type":1,"super":{"inPacketLog":[],"outPacketLog":[],"currPacketQueue":[],"nextPacketQueue":[],"arpTable":[],"interfaces":{},"id":"node-pd32mcfl","fwRules":[],"nodeX":450,"nodeY":250},"ip":{"groups":4,"parsedAddress":["127","0","0","2"],"parsedSubnet":"","subnet":"/32","subnetMask":32,"v4":true,"address":"127.0.0.1","addressMinusSuffix":"127.0.0.1"},"mType":2}        
       ]
     }
   }

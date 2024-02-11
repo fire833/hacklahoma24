@@ -122,13 +122,12 @@
         </div>
       {/each}
     {/if}
-
     {#if counter >= 2}
-      <button on:click={backwardClick}>Back</button>
+      <button on:click={backwardClick} class="back">Back</button>
     {/if}
 
     {#if counter <= 3}
-      <button on:click={forwardClick}>Next</button>
+      <button on:click={forwardClick} class="next">Next</button>
     {/if}
     <!-- {:else if setting === SideBarModes.PacketFlows}
     {#if currNode}
