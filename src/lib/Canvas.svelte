@@ -4,7 +4,7 @@
   import type { Network } from "../net/net.js";
   import type { Application } from "pixi.js";
   import type { Viewport } from "pixi-viewport";
-  import { Sim } from "./canvas/sim.js";
+  import { SimObject } from "./canvas/sim.js";
 
   export let net: Network;
 
@@ -12,12 +12,12 @@
 
   onMount(async () => {
     placeCanvas(canvas);
-    new Sim(net);
+    new SimObject(net);
   });
 
   afterUpdate(async () => {
     placeCanvas(canvas);
-    new Sim(net);
+    new SimObject(net);
   });
 </script>
 

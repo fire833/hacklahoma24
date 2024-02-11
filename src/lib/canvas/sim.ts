@@ -7,7 +7,7 @@ import Router from "../../assets/sprites/Router.png";
 
 import { viewport, app, placeCanvas } from "./placeCanvas.js";
 
-export class Sim {
+export class SimObject {
   net: Network;
   nodes: VisNode[] = [];
   edges: VisEdge[] = [];
