@@ -1,6 +1,6 @@
 <script lang="ts">
   import { afterUpdate, onMount } from "svelte";
-  import { placeCanvas } from "./canvas/render.js";
+  import { placeCanvas } from "./canvas/placeCanvas.js";
   import { speed, visMode } from "../stores";
 
   let canvas: HTMLElement;
