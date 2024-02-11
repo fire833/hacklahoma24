@@ -1,4 +1,5 @@
 import { Address4 } from "ip-address";
+import { broadcastmac } from "./consts";
 import {
   FirewallError,
   NetworkError,
@@ -16,6 +17,8 @@ export abstract class Node {
   // queues of packets for ticks
   public currPacketQueue: Array<Packet> = new Array<Packet>();
   public nextPacketQueue: Array<Packet> = new Array<Packet>();
+
+  public arpWaitMap: Map<Address4, Packet> = new Map<Address4, Packet>();
 
   // Mapping of IP addresses to the MAC address, and the node edge to forward along.
   public arpTable: Map<Address4, [string, string]> = new Map<
@@ -183,10 +186,82 @@ export abstract class Node {
     }
   }
 
+  public route(p: Packet, net: Network) {
+    for (let route of this.interfaces) {
+      // if we find an interface with the same subnet, we need to forward to that network.
+      if (route[1][0] && p.dstip.isInSubnet(route[1][0])) {
+        let n = this.arpTable.get(p.dstip); // If we don't have a
+        if (n) {
+          let found = this.findAddrCached(p.dstip);
+          if (found && route[1][2]) {
+            p.srcmac = n[0];
+
+            let forward_node = net.net.get(n[1]);
+            if (forward_node) {
+              forward_node.appendPacket(p);
+            }
+            this.handleOut(p);
+            return null;
+          }
+        } else {
+          // Need to run ARP.
+          for (let iface of this.interfaces) {
+            if (
+              iface[1][0] &&
+              iface[1][1] &&
+              iface[1][2] &&
+              p.dstip.isInSubnet(iface[1][0])
+            ) {
+              this.sendArpRequest(
+                iface[1][0],
+                iface[1][1],
+                iface[1][2],
+                p.dstip,
+                net
+              );
+              this.arpWaitMap.set(p.dstip, p);
+              return null;
+            }
+          }
+        }
+      }
+    }
+  }
+
   // If we get an ARP response, add to our ARP table.
-  public resolveArpResponse(p: Packet) {
+  public resolveArpResponse(p: Packet, net: Network) {
     if (p.app === PacketType.ARPResponse)
       this.arpTable.set(p.srcip, [p.srcmac, p.srcnode]);
+
+    // If we just resolved an IP that we were waiting for in our
+    // arp wait cache, then we can send the packet off directly.
+    let val = this.arpWaitMap.get(p.dstip);
+    if (val) {
+      this.route(val, net);
+    }
+  }
+
+  public sendArpRequest(
+    srcip: Address4,
+    srcmac: string,
+    dstnode: string,
+    dstip: Address4,
+    net: Network
+  ) {
+    let n = net.net.get(dstnode);
+    if (n) {
+      n.appendPacket(
+        new Packet(
+          this.id,
+          srcmac,
+          broadcastmac,
+          srcip,
+          dstip,
+          "",
+          PacketType.ARPRequest
+        )
+      );
+    }
   }
 
   public toJSON(): object {

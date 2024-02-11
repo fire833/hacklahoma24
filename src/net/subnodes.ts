@@ -138,38 +138,16 @@ export class Router extends Node {
         break;
       }
       case PacketType.ARPResponse: {
-        super.resolveArpResponse(p);
+        super.resolveArpResponse(p, net);
         break;
       }
       default: {
-        for (let route of super.interfaces) {
-          // if we find an interface with the same subnet, we need to forward to that network.
-          if (route[1][0] && p.dstip.isInSubnet(route[1][0])) {
-            let n = super.arpTable.get(p.dstip); // If we don't have a
-            if (n) {
-              let found = super.findAddrCached(p.dstip);
-              if (found) {
-                let newP = p;
-
-                super.handleOut(newP);
-                return null;
-              }
-            } else {
-              // Need to run ARP.
-              for (let iface of super.interfaces) {
-                if (iface[1][0] && p.dstip.isInSubnet(iface[1][0])) {
-                }
-              }
-            }
-          }
-        }
+        super.route(p, net);
       }
     }
 
     return arr;
   }
-
-  public add_route(subnet: Address4, node: string) {}
 
   public override toJSON(): object {
     return {
@@ -252,16 +230,56 @@ export class Machine extends Node {
         break;
       }
       case PacketType.ARPResponse: {
-        super.resolveArpResponse(p);
+        super.resolveArpResponse(p, net);
         break;
       }
       case PacketType.Ping: {
-        if (net.net.get(p.srcnode)) {
+        let n = net.net.get(p.srcnode);
+        if (n) {
+          n.appendPacket(
+            new Packet(
+              this.id,
+              p.dstmac,
+              p.srcmac,
+              p.dstip,
+              p.srcip,
+              "",
+              PacketType.Ping
+            )
+          );
         }
       }
       case PacketType.SSH: {
+        let n = net.net.get(p.srcnode);
+        if (n) {
+          n.appendPacket(
+            new Packet(
+              this.id,
+              p.dstmac,
+              p.srcmac,
+              p.dstip,
+              p.srcip,
+              "",
+              PacketType.SSH
+            )
+          );
+        }
       }
       case PacketType.VideoStream: {
+        let n = net.net.get(p.srcnode);
+        if (n) {
+          n.appendPacket(
+            new Packet(
+              this.id,
+              p.dstmac,
+              p.srcmac,
+              p.dstip,
+              p.srcip,
+              "",
+              PacketType.VideoStream
+            )
+          );
+        }
       }
     }
 
