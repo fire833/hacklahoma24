@@ -3,6 +3,13 @@ import { broadcastmac } from "./consts";
 import { NetworkError, NoNodeError, NoSwitchportError } from "./errors";
 import { Network, Node, Packet, PacketType } from "./net";
 
+enum NodeType {
+  Router,
+  Machine,
+  InternetGateway,
+  Switch,
+}
+
 export class Switch extends Node {
   constructor(ports: number, id?: string, x?: number, y?: number) {
     super(ports, id, x, y);
@@ -43,6 +50,31 @@ export class Switch extends Node {
       arr.push(NoSwitchportError);
       return arr;
     }
+  }
+
+  public override toJSON() : object {
+    return {
+      "type": NodeType.Switch,
+      "super": super.toJSON(),
+    }
+  }
+
+  public static parseJSON(json : string) : Switch {
+    let returnSwitch = new Switch(1);
+    let parsedJSON = JSON.parse(json);
+
+    returnSwitch.inPacketLog = parsedJSON.super.inPacketLog;
+    returnSwitch.outPacketLog = parsedJSON.super.outPacketLog;
+    returnSwitch.currPacketQueue = parsedJSON.super.currPacketQueue;
+    returnSwitch.nextPacketQueue = parsedJSON.super.nextPacketQueue;
+    returnSwitch.arpTable = parsedJSON.super.arpTable;
+    returnSwitch.interfaces = parsedJSON.super.interfaces;
+    returnSwitch.id = parsedJSON.super.id;
+    returnSwitch.fwRules = parsedJSON.super.fwRules;
+    returnSwitch.nodeX = parsedJSON.super.nodeX;
+    returnSwitch.nodeY = parsedJSON.super.nodeY;
+
+    return returnSwitch;
   }
 }
 
@@ -93,6 +125,31 @@ export class Router extends Node {
   }
 
   public add_route(subnet: Address4, node: string) {}
+
+  public override toJSON() : object {
+    return {
+      "type": NodeType.Router,
+      "super": super.toJSON(),
+    }
+  }
+
+  public static parseJSON(json : string) : Router {
+    let returnRouter = new Router(1);
+    let parsedJSON = JSON.parse(json);
+
+    returnRouter.inPacketLog = parsedJSON.super.inPacketLog;
+    returnRouter.outPacketLog = parsedJSON.super.outPacketLog;
+    returnRouter.currPacketQueue = parsedJSON.super.currPacketQueue;
+    returnRouter.nextPacketQueue = parsedJSON.super.nextPacketQueue;
+    returnRouter.arpTable = parsedJSON.super.arpTable;
+    returnRouter.interfaces = parsedJSON.super.interfaces;
+    returnRouter.id = parsedJSON.super.id;
+    returnRouter.fwRules = parsedJSON.super.fwRules;
+    returnRouter.nodeX = parsedJSON.super.nodeX;
+    returnRouter.nodeY = parsedJSON.super.nodeY;
+
+    return returnRouter;
+  }
 }
 
 export enum MachineType {
@@ -132,6 +189,10 @@ export class Machine extends Node {
     }
   }
 
+  public setIP(ip : Address4) : void {
+    this.ip = ip;
+  }
+
   public handle(p: Packet, net: Network): Array<NetworkError> | null {
     let arr = Array();
     let err = super.handleIn(p);
@@ -162,12 +223,33 @@ export class Machine extends Node {
     return null;
   }
 
-  public override toJSON(): string {
-    return JSON.stringify({
-      super: super.toJSON(),
-      ip: this.ip,
-      mType: this.mType,
-    });
+  public override toJSON() : object {
+    return {
+      "type": NodeType.Machine,
+      "super": super.toJSON(),
+      "ip": this.ip,
+      "mType": this.mType,
+    }
+  }
+
+  public static parseJSON(json : string) : Machine {
+    let returnMachine = new Machine(1, new Address4("1.1.1.1"));
+    let parsedJSON = JSON.parse(json);
+
+    returnMachine.inPacketLog = parsedJSON.super.inPacketLog;
+    returnMachine.outPacketLog = parsedJSON.super.outPacketLog;
+    returnMachine.currPacketQueue = parsedJSON.super.currPacketQueue;
+    returnMachine.nextPacketQueue = parsedJSON.super.nextPacketQueue;
+    returnMachine.arpTable = parsedJSON.super.arpTable;
+    returnMachine.interfaces = parsedJSON.super.interfaces;
+    returnMachine.id = parsedJSON.super.id;
+    returnMachine.fwRules = parsedJSON.super.fwRules;
+    returnMachine.nodeX = parsedJSON.super.nodeX;
+    returnMachine.nodeY = parsedJSON.super.nodeY;
+    returnMachine.setIP(parsedJSON.ip);
+    returnMachine.mType = parsedJSON.mType;
+
+    return returnMachine;
   }
 }
 
@@ -188,5 +270,30 @@ export class InternetGateway extends Node {
 
     super.handleOut(p);
     return null;
+  }
+
+  public override toJSON() : object {
+    return {
+      "type": NodeType.InternetGateway,
+      "super": super.toJSON(),
+    };
+  }
+
+  public static parseJSON(json : string) : InternetGateway {
+    let returnInternetGateway = new Router(1);
+    let parsedJSON = JSON.parse(json);
+
+    returnInternetGateway.inPacketLog = parsedJSON.super.inPacketLog;
+    returnInternetGateway.outPacketLog = parsedJSON.super.outPacketLog;
+    returnInternetGateway.currPacketQueue = parsedJSON.super.currPacketQueue;
+    returnInternetGateway.nextPacketQueue = parsedJSON.super.nextPacketQueue;
+    returnInternetGateway.arpTable = parsedJSON.super.arpTable;
+    returnInternetGateway.interfaces = parsedJSON.super.interfaces;
+    returnInternetGateway.id = parsedJSON.super.id;
+    returnInternetGateway.fwRules = parsedJSON.super.fwRules;
+    returnInternetGateway.nodeX = parsedJSON.super.nodeX;
+    returnInternetGateway.nodeY = parsedJSON.super.nodeY;
+
+    return returnInternetGateway;
   }
 }

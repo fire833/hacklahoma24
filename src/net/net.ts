@@ -33,7 +33,7 @@ export abstract class Node {
   public id: string = "node-" + makeString(8);
 
   // firewall rules for stuff
-  private fwRules: Array<FirewallRule> = new Array<FirewallRule>();
+  public fwRules: Array<FirewallRule> = new Array<FirewallRule>();
 
   public nodeX: number | undefined = 0;
   public nodeY: number | undefined = 0;
