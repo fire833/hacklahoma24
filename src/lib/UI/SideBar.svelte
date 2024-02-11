@@ -49,14 +49,24 @@
   function forwardClick() {
     event?.preventDefault();
     counter = counter + 1;
-    currentTut = eval(`tutorialData${counter}`);
+    try {
+      currentTut = eval(`tutorialData${counter}`);
+      console.log("Next")
+    } catch (error) {
+      console.log(error);
+    }
     renderTutorialJSON(currentTut);
   }
 
   function backwardClick() {
     event?.preventDefault();
     counter = counter - 1;
-    currentTut = eval(`tutorialData${counter}`);
+    try {
+      currentTut = eval(`tutorialData${counter}`);
+      console.log("Prev")
+    } catch (error) {
+      console.log(error)
+    }
     renderTutorialJSON(currentTut);
   }
 </script>
