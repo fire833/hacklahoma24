@@ -23,3 +23,6 @@ export const NoNodeError: NetworkError = new NetworkError(
 export const NoAddressError: NetworkError = new NetworkError(
   "no host has desired ip"
 );
+export const NoPortError: NetworkError = new NetworkError(
+  "no available port found"
+);

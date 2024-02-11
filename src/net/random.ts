@@ -8,3 +8,27 @@ export function makeString(len: number): string {
 
   return outString;
 }
+
+export function makeRandomMAC(): string {
+  let out = "";
+  let opts = "0123456789ABCDEF";
+
+  out += opts.charAt(Math.floor(Math.random() * opts.length));
+  out += opts.charAt(Math.floor(Math.random() * opts.length));
+  out += ":";
+  out += opts.charAt(Math.floor(Math.random() * opts.length));
+  out += opts.charAt(Math.floor(Math.random() * opts.length));
+  out += ":";
+  out += opts.charAt(Math.floor(Math.random() * opts.length));
+  out += opts.charAt(Math.floor(Math.random() * opts.length));
+  out += ":";
+  out += opts.charAt(Math.floor(Math.random() * opts.length));
+  out += opts.charAt(Math.floor(Math.random() * opts.length));
+  out += ":";
+  out += opts.charAt(Math.floor(Math.random() * opts.length));
+  out += opts.charAt(Math.floor(Math.random() * opts.length));
+  out += ":";
+  out += opts.charAt(Math.floor(Math.random() * opts.length));
+  out += opts.charAt(Math.floor(Math.random() * opts.length));
+  return out;
+}

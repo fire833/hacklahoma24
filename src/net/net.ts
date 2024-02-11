@@ -1,6 +1,11 @@
 import { Address4 } from "ip-address";
-import { FirewallError, NetworkError } from "./errors";
-import { makeString } from "./random";
+import {
+  FirewallError,
+  NetworkError,
+  NoNodeError,
+  NoPortError,
+} from "./errors";
+import { makeRandomMAC, makeString } from "./random";
 
 // Generic node type that is used for all subtypes.
 export abstract class Node {
@@ -18,8 +23,11 @@ export abstract class Node {
     [string, string]
   >();
 
-  // Mapping of all interfaces indices with the appropriate IP/MAC.
-  public interfaces: Map<number, [Address4 | null, string | null]>;
+  // Mapping of all interfaces indices with the appropriate IP/MAC/Node.
+  public interfaces: Map<
+    number,
+    [Address4 | null, string | null, string | null]
+  >;
 
   // assign a random node id to each node we create.
   public id: string = "node-" + makeString(8);
@@ -38,9 +46,12 @@ export abstract class Node {
     this.nodeY = y;
 
     // create all of our interfaces. [IP, MAC].
-    this.interfaces = new Map<number, [Address4 | null, string | null]>();
+    this.interfaces = new Map<
+      number,
+      [Address4 | null, string, string | null]
+    >();
     for (let i = 0; i < numPorts; i++) {
-      this.interfaces.set(i, [null, null]);
+      this.interfaces.set(i, [null, makeRandomMAC(), null]);
     }
   }
 
@@ -99,6 +110,30 @@ export abstract class Node {
     return arr;
   }
 
+  public add_edge(other: Node): NetworkError | null {
+    let lindex = this.get_free_nic();
+    let rindex = other.get_free_nic();
+    if (lindex && rindex) {
+      let curr = this.interfaces.get(lindex);
+      if (curr) {
+        this.interfaces.set(lindex, [curr[0], curr[1], other.id]);
+      } else {
+        return NoPortError;
+      }
+
+      let outside = other.interfaces.get(rindex);
+      if (outside) {
+        this.interfaces.set(rindex, [outside[0], outside[1], this.id]);
+      } else {
+        return NoPortError;
+      }
+
+      return null;
+    } else {
+      return NoPortError;
+    }
+  }
+
   public tick(net: Network) {
     for (let packet of this.currPacketQueue) {
       this.handle(packet, net);
@@ -120,6 +155,14 @@ export abstract class Node {
     }
 
     return false;
+  }
+
+  public get_free_nic(): number | null {
+    // If we have an empty slot, then fill it with the other node.
+    for (let iface of this.interfaces)
+      if (!iface[1][0] && !iface[1][2]) return iface[0];
+
+    return null;
   }
 
   public resolveArpRequest(p: Packet, net: Network) {
@@ -188,6 +231,17 @@ export class Network {
 
   public add_node(n: Node) {
     this.net.set(n.id, n);
+  }
+
+  public add_edge(srcnode: string, destnode: string): NetworkError | null {
+    let src = this.net.get(srcnode);
+    let dest = this.net.get(destnode);
+    if (!src || !dest) return NoNodeError;
+
+    src.add_edge(dest);
+    src.add_edge(src);
+
+    return null;
   }
 }
 

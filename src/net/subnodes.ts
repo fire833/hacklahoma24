@@ -4,13 +4,8 @@ import { NetworkError, NoNodeError, NoSwitchportError } from "./errors";
 import { Network, Node, Packet, PacketType } from "./net";
 
 export class Switch extends Node {
-  // internal lookup table of MAC adresses to external nodes.
-  private macToIface: Map<string, string> = new Map<string, string>();
-  private numPorts: number;
-
   constructor(ports: number, id?: string, x?: number, y?: number) {
-    super(0, id, x, y);
-    this.numPorts = ports;
+    super(ports, id, x, y);
   }
 
   // Returns the node to forward to and the output packet, or null
@@ -23,15 +18,16 @@ export class Switch extends Node {
     }
 
     if (p.dstmac === broadcastmac) {
-      for (let neigh of this.macToIface) {
-        let node = net.net.get(neigh[1]);
-        p.srcnode = super.id;
-        if (node) {
-          node.appendPacket(p);
-        } else {
-          arr.push(NoNodeError);
+      for (let neigh of this.interfaces)
+        if (neigh[1][2]) {
+          let node = net.net.get(neigh[1][2]);
+          if (node) {
+            p.srcnode = super.id;
+            node.appendPacket(p);
+          } else {
+            arr.push(NoNodeError);
+          }
         }
-      }
       return null;
     } else if (this.macToIface.has(p.dstmac)) {
       let n = this.macToIface.get(p.dstmac);
@@ -47,32 +43,6 @@ export class Switch extends Node {
       arr.push(NoSwitchportError);
       return arr;
     }
-  }
-
-  public add_neighbor(mac: string, node: string) {
-    if (this.macToIface.size + 1 <= this.numPorts)
-      this.macToIface.set(mac, node);
-  }
-
-  public get_num_active_ports() {
-    return this.macToIface.size;
-  }
-
-  public override get_edges(): Array<[string, string]> {
-    let arr = Array();
-    for (let m of this.macToIface) {
-      arr.push([super.id, m[1]]);
-    }
-
-    return arr;
-  }
-
-  public override toJSON() : string {
-    return JSON.stringify({
-      "super": super.toJSON(),
-      "macToIface": this.macToIface,
-      "numPorts": this.numPorts,
-    })
   }
 }
 
@@ -192,12 +162,12 @@ export class Machine extends Node {
     return null;
   }
 
-  public override toJSON() : string {
+  public override toJSON(): string {
     return JSON.stringify({
-      "super": super.toJSON(),
-      "ip": this.ip,
-      "mType": this.mType,
-    })
+      super: super.toJSON(),
+      ip: this.ip,
+      mType: this.mType,
+    });
   }
 }
 
